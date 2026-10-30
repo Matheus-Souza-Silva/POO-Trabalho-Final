@@ -49,9 +49,11 @@ CREATE TABLE JOGADOR (
         ON UPDATE CASCADE
 );
 
+-- 5. Tabela CLASSIFICAÇÃO
+
 CREATE TABLE CLASSIFICACAO (
 	id_equipe INT PRIMARY KEY,
-	nome_equipe VARCHAR,
+	nome_equipe VARCHAR(100),
     colocacao_equipe INT,
     partidas_jogadas INT NOT NULL DEFAULT 0,
     vitorias INT NOT NULL DEFAULT 0,
@@ -65,7 +67,7 @@ CREATE TABLE CLASSIFICACAO (
     FOREIGN KEY (id_equipe) REFERENCES EQUIPE (id_equipe)
 );
 
--- 5. Tabela PARTIDA
+-- 6. Tabela PARTIDA
 CREATE TABLE PARTIDA (
     id_partida INT PRIMARY KEY AUTO_INCREMENT,
     id_campeonato INT NOT NULL,
@@ -75,6 +77,11 @@ CREATE TABLE PARTIDA (
     data_partida DATETIME NOT NULL,
     gols_mandante INT,
     gols_visitante INT,
+    tempo_partida ENUM(
+		'1° TEMPO',
+        '2° TEMPO'
+    ),
+    acrescimo INT,
 
     status ENUM(
         'AGENDADA',
@@ -119,4 +126,19 @@ CREATE TABLE PARTIDA (
             OR
             (gols_mandante IS NOT NULL AND gols_visitante IS NOT NULL)
         )
+);
+
+-- 7. Tabela ÁRBITRO
+
+CREATE TABLE IF NOT EXISTS ARBITRO(
+	id_arbitro INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    registro_federacao VARCHAR(30) UNIQUE,
+    categoria ENUM(
+        'LOCAL',
+        'ESTADUAL',
+        'NACIONAL',
+        'FIFA'
+    ) NOT NULL DEFAULT 'LOCAL'
+    
 );
