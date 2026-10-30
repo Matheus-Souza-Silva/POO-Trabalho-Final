@@ -1,9 +1,13 @@
+DROP DATABASE IF EXISTS campeonato;
 
-CREATE DATABASE sistema_gestao;
-USE sistema_gestao;
+CREATE DATABASE IF NOT EXISTS campeonato
+DEFAULT CHARACTER SET utf8mb4
+DEFAULT COLLATE utf8mb4_unicode_ci;
+
+USE campeonato;
 
 -- 1. Tabela CAMPEONATO
-CREATE TABLE CAMPEONATO (
+CREATE TABLE IF NOT EXISTS CAMPEONATO (
     id_campeonato INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     data_inicio DATE NOT NULL,
@@ -19,14 +23,14 @@ CREATE TABLE CAMPEONATO (
 );
 
 -- 2. Tabela EQUIPE
-CREATE TABLE EQUIPE (
+CREATE TABLE IF NOT EXISTS EQUIPE (
     id_equipe INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     cidade VARCHAR(30) NOT NULL
 );
 
 -- 3. Tabela ESTADIO
-CREATE TABLE ESTADIO (
+CREATE TABLE IF NOT EXISTS ESTADIO (
     id_estadio INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     cidade VARCHAR(100) NOT NULL,
@@ -36,7 +40,7 @@ CREATE TABLE ESTADIO (
 );
 
 -- 4. Tabela JOGADOR
-CREATE TABLE JOGADOR (
+CREATE TABLE IF NOT EXISTS JOGADOR (
     id_jogador INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     posicao VARCHAR(100) NOT NULL,
@@ -50,8 +54,7 @@ CREATE TABLE JOGADOR (
 );
 
 -- 5. Tabela CLASSIFICAÇÃO
-
-CREATE TABLE CLASSIFICACAO (
+CREATE TABLE IF NOT EXISTS CLASSIFICACAO (
 	id_equipe INT PRIMARY KEY,
 	nome_equipe VARCHAR(100),
     colocacao_equipe INT,
@@ -63,12 +66,15 @@ CREATE TABLE CLASSIFICACAO (
     gol_marcados INT NOT NULL DEFAULT 0,
     gol_sofridos INT NOT NULL DEFAULT 0,
     saldo_gols INT NOT NULL DEFAULT 0,
-    status_atual ENUM ('ELIMINADO', 'CLASSIFICADO', 'A JOGAR') NOT NULL DEFAULT 'CLASSIFICADO',
+    status_atual ENUM (
+    'ELIMINADO', 
+    'CLASSIFICADO', 
+    'A JOGAR') NOT NULL DEFAULT 'CLASSIFICADO',
     FOREIGN KEY (id_equipe) REFERENCES EQUIPE (id_equipe)
 );
 
 -- 6. Tabela PARTIDA
-CREATE TABLE PARTIDA (
+CREATE TABLE IF NOT EXISTS PARTIDA (
     id_partida INT PRIMARY KEY AUTO_INCREMENT,
     id_campeonato INT NOT NULL,
     id_mandante INT NOT NULL,
@@ -77,10 +83,6 @@ CREATE TABLE PARTIDA (
     data_partida DATETIME NOT NULL,
     gols_mandante INT,
     gols_visitante INT,
-    tempo_partida ENUM(
-		'1° TEMPO',
-        '2° TEMPO'
-    ),
     acrescimo INT,
 
     status ENUM(
@@ -89,6 +91,11 @@ CREATE TABLE PARTIDA (
         'ENCERRADA',
         'CANCELADA'
     ) NOT NULL DEFAULT 'AGENDADA',
+    
+    tempo_partida ENUM(
+		'1° TEMPO',
+        '2° TEMPO'
+    ),
 
     CONSTRAINT fk_partida_campeonato
         FOREIGN KEY (id_campeonato)
@@ -121,15 +128,10 @@ CREATE TABLE PARTIDA (
         CHECK (gols_visitante IS NULL OR gols_visitante >= 0),
 
     CONSTRAINT chk_placar_completo
-        CHECK (
-            (gols_mandante IS NULL AND gols_visitante IS NULL)
-            OR
-            (gols_mandante IS NOT NULL AND gols_visitante IS NOT NULL)
-        )
+        CHECK ((gols_mandante IS NULL AND gols_visitante IS NULL) OR (gols_mandante IS NOT NULL AND gols_visitante IS NOT NULL))
 );
 
 -- 7. Tabela ÁRBITRO
-
 CREATE TABLE IF NOT EXISTS ARBITRO(
 	id_arbitro INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
@@ -140,5 +142,4 @@ CREATE TABLE IF NOT EXISTS ARBITRO(
         'NACIONAL',
         'FIFA'
     ) NOT NULL DEFAULT 'LOCAL'
-    
 );
