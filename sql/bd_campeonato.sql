@@ -64,8 +64,8 @@ CREATE TABLE CLASSIFICACAO (
     derrotas INT NOT NULL DEFAULT 0,
     gols_marcados INT NOT NULL DEFAULT 0,
     gols_sofridos INT NOT NULL DEFAULT 0,
-    saldo_gols INT AS (gols_marcados - gols_sofridos) STORED,
-    pontuacao  INT AS (vitorias * 3 + empates) STORED,
+    saldo_gols INT GENERATED ALWAYS AS (gols_marcados - gols_sofridos) STORED,
+    pontuacao  INT GENERATED ALWAYS AS (vitorias * 3 + empates) STORED,
     status_atual ENUM(
     'EM_ANDAMENTO',
     'CLASSIFICADO',
@@ -109,7 +109,8 @@ CREATE TABLE IF NOT EXISTS PARTIDA (
     data_partida DATETIME NOT NULL,
     gols_mandante INT,
     gols_visitante INT,
-    acrescimo INT,
+    acrescimo_1_tempo INT NOT NULL DEFAULT 0,
+    acrescimo_2_tempo INT NOT NULL DEFAULT 0,
 
     status ENUM(
         'AGENDADA',
@@ -119,8 +120,8 @@ CREATE TABLE IF NOT EXISTS PARTIDA (
     ) NOT NULL DEFAULT 'AGENDADA',
     
     tempo_partida ENUM(
-		'1° TEMPO',
-        '2° TEMPO'
+		'PRIMEIRO_TEMPO',
+        'SEGUNDO_TEMPO'
     ),
 
     CONSTRAINT fk_partida_campeonato
@@ -188,6 +189,9 @@ CREATE TABLE IF NOT EXISTS PARTIDA (
 			(status = 'CANCELADA'
 				AND gols_mandante IS NULL
 				AND gols_visitante IS NULL)
-		)
+		),	
+        
+        CONSTRAINT chk_acrescimos
+			CHECK(acrescimo_1_tempo >= 0 AND acrescimo_2_tempo >= 0)
 );
 
