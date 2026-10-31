@@ -80,20 +80,20 @@ A **rotina principal** do sistema é o **registro de partidas**: o organizador a
 O sistema segue o padrão **Model-View-Controller**: cada camada tem uma responsabilidade, e a lógica **não** fica dentro dos eventos dos botões.
 
 ```mermaid
-flowchart LR
-    U(["👤 Usuário"]) --> V
-    subgraph App["Aplicação Java"]
-        V["🖥️ View<br/>Telas Swing (JFrame)"]
-        C["🎮 Controller<br/>valida e coordena"]
-        M["📦 Model<br/>entidades + DAO"]
-    end
-    V -- "clique / dados do formulário" --> C
-    C -- "chama" --> M
-    M -- "SQL via JDBC" --> DB[("🐬 MySQL<br/>tabelas, triggers,<br/>procedures")]
-    DB -- "linhas / erros" --> M
-    M -- "objetos" --> C
-    C -- "resultado ou mensagem" --> V
+flowchart TD
+    U(["Usuário"])
+    V["VIEW<br/>Telas Swing - JFrame"]
+    C["CONTROLLER<br/>valida e coordena"]
+    M["MODEL<br/>entidades e DAO"]
+    DB[("MySQL<br/>tabelas, triggers e procedures")]
+
+    U -->|"preenche e clica"| V
+    V -->|"envia a ação"| C
+    C -->|"chama o DAO"| M
+    M -->|"SQL via JDBC"| DB
 ```
+
+A resposta faz o caminho inverso: o banco devolve as linhas (ou um erro), o DAO monta os objetos, o Controller trata o resultado e a View exibe os dados ou a mensagem para o usuário.
 
 | Camada | Pacote | Responsabilidade |
 |---|---|---|
@@ -202,10 +202,10 @@ Desempate: pontos → vitórias → saldo de gols → gols marcados.
 ```mermaid
 flowchart TD
     A["Java salva uma partida<br/>(INSERT / UPDATE)"] --> B{"Trigger BEFORE<br/>sp_validar_partida"}
-    B -- "regra quebrada" --> X["❌ Erro com mensagem<br/>exibida na tela"]
+    B -- "regra quebrada" --> X["Erro com mensagem<br/>exibida na tela"]
     B -- "ok" --> C["MySQL grava a partida"]
     C --> D["Trigger AFTER<br/>sp_sincronizar_classificacao"]
-    D --> E["✅ Classificação atualizada<br/>pontos, saldo e colocação"]
+    D --> E["Classificação atualizada<br/>pontos, saldo e colocação"]
 ```
 
 ### Scripts
@@ -325,6 +325,7 @@ POO-Trabalho-Final/
 |---|---|
 | _a preencher_ | [Matheus-Souza-Silva](https://github.com/Matheus-Souza-Silva) |
 | Macio Alvez | [macioalves](https://github.com/macioalves) |
+| Pedro | [Pedr0-4raujo](https://github.com/Pedr0-4raujo) |
 
 ---
 
