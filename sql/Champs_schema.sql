@@ -1,6 +1,6 @@
 -- =====================================================================
--- 01_schema.sql  |  Estrutura do banco CAMPEONATO (MySQL 8.0.16+)
--- Ordem de execucao: 01 -> 02 -> 03 -> 04 -> 05
+-- Champs_schema.sql  |  Estrutura do banco CAMPEONATO (MySQL 8.0.16+)
+-- Ordem de execucao: Champs_schema -> Champs_procedures_triggers -> Champs_relatorios
 -- =====================================================================
 
 DROP DATABASE IF EXISTS campeonato;
@@ -91,7 +91,7 @@ CREATE TABLE ARBITRO (
 CREATE TABLE CLASSIFICACAO (
     id_campeonato    INT NOT NULL,
     id_equipe        INT NOT NULL,
-    colocacao INT NULL,
+    colocacao_equipe INT NULL,
 
     partidas_jogadas INT NOT NULL DEFAULT 0,
     vitorias         INT NOT NULL DEFAULT 0,
@@ -119,7 +119,7 @@ CREATE TABLE CLASSIFICACAO (
         CHECK (partidas_jogadas = vitorias + empates + derrotas),
         
     CONSTRAINT chk_classificacao_colocacao
-        CHECK (colocacao IS NULL OR colocacao_equipe > 0)
+        CHECK (colocacao_equipe IS NULL OR colocacao_equipe > 0)
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -178,6 +178,8 @@ CREATE TABLE PARTIDA (
         OR (status IN ('AGENDADA','CANCELADA') AND gols_mandante IS NULL AND gols_visitante IS NULL)
         OR (status = 'EM_ANDAMENTO')
     ),
+    -- 1o/2o tempo so faz sentido com o jogo acontecendo
+    CONSTRAINT chk_partida_tempo CHECK (tempo_partida IS NULL OR status = 'EM_ANDAMENTO'),
     -- um confronto so pode ocorrer uma vez por rodada no campeonato
     CONSTRAINT uq_partida_confronto UNIQUE (id_campeonato, rodada, id_mandante, id_visitante),
 
