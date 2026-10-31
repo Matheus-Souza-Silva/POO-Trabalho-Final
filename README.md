@@ -303,10 +303,11 @@ POO-Trabalho-Final/
 ## 🗺️ Roadmap
 
 - [x] **Fase 1 (Banco de dados):** estrutura, regras da partida, classificação automática, relatório com JOIN e testes
-- [ ] **Fase 2 (Base Java):** pacotes MVC e conexão JDBC
-- [ ] **Fase 3 (CRUDs simples):** Campeonato, Equipe, Estádio e Árbitro
-- [ ] **Fase 4 (CRUD principal):** Partidas, inscrição e classificação
-- [ ] **Fase 5 (Relatório e demonstração):** tela de relatório com impressão/PDF
+- [X] **Fase 2 (Base Java):** pacotes MVC e conexão JDBC
+- [ ] **Fase 3 (Model Completo):** Converter os atributos das entidades para as classes do controle
+- [ ] **Fase 4 (CRUDs simples):** Campeonato, Equipe, Estádio e Árbitro
+- [ ] **Fase 5 (CRUD principal):** Partidas, inscrição e classificação
+- [ ] **Fase 6 (Relatório e demonstração):** tela de relatório com impressão/PDF
 
 ---
 
