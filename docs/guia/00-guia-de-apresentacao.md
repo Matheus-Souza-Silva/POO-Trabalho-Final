@@ -1,4 +1,4 @@
-# Guia de Apresentação — Sistema de Campeonato
+# Guia de Apresentação - Sistema de Campeonato
 
 Material para **todos os integrantes**. Na apresentação cada um abre o código, explica e responde a **2 perguntas** (0,5 cada) sobre **qualquer parte** do projeto. Este guia dá a visão do todo e aponta onde estudar cada assunto.
 
@@ -29,15 +29,15 @@ Material para **todos os integrantes**. Na apresentação cada um abre o código
 
 | Requisito | Onde está | Situação |
 |---|---|---|
-| 4 CRUDs simples | Campeonato, Equipe, Estádio, Árbitro — tabelas em `sql/Champs_schema.sql`; telas *(a preencher na Fase 3)* | banco pronto |
-| CRUD principal com relacionamentos | Partida — tabela `PARTIDA` com 5 FKs; regras em `sql/Champs_procedures_triggers.sql`; tela *(a preencher na Fase 4)* | banco pronto |
+| 4 CRUDs simples | Campeonato, Equipe, Estádio, Árbitro: tabelas em `sql/Champs_schema.sql`; telas *(a preencher na Fase 3)* | banco pronto |
+| CRUD principal com relacionamentos | Partida: tabela `PARTIDA` com 5 FKs; regras em `sql/Champs_procedures_triggers.sql`; tela *(a preencher na Fase 4)* | banco pronto |
 | Consulta com JOIN | `sp_relatorio_partidas_periodo` em `sql/Champs_relatorios.sql`; consultas Java *(a preencher na Fase 4)* | banco pronto |
 | Relatório da rotina principal | `sp_relatorio_partidas_periodo` (partidas por período); tela *(a preencher na Fase 5)* | banco pronto |
-| MySQL, tabelas, PK, FK, relacionamentos | `sql/Champs_schema.sql` — guia do banco, seção 1 | pronto |
+| MySQL, tabelas, PK, FK, relacionamentos | `sql/Champs_schema.sql` (guia do banco, seção 1) | pronto |
 | Script SQL de criação | `sql/Champs_schema.sql`, `Champs_procedures_triggers.sql`, `Champs_relatorios.sql` | pronto |
 | Dados cadastrados para demonstração | cadastrados pelas telas *(Fase 5)*; testes do banco em `sql/99_testes.sql` | pendente |
-| Java + POO | classes de modelo, DAO, controller e telas *(Fases 2–4)* | pendente |
-| JFrame/Swing | pacote `visao` *(Fases 2–5)* | pendente |
+| Java + POO | classes de modelo, DAO, controller e telas *(Fases 2 a 4)* | pendente |
+| JFrame/Swing | pacote `visao` *(Fases 2 a 5)* | pendente |
 | JDBC | `ConexaoBD` e DAOs *(Fase 2)* | pendente |
 | MVC | pacotes `modelo`, `controle`, `visao` *(Fase 2)* | pendente |
 
@@ -51,9 +51,9 @@ Material para **todos os integrantes**. Na apresentação cada um abre o código
   (JFrame)     <--resposta- (valida, trata erro) <-objetos- (Partida)    <--linhas----   (tabelas, triggers)
 ```
 
-- **Model** — as classes de dados (`Partida`, `Equipe`…) e os DAOs, que fazem o SQL.
-- **View** — as telas Swing (`JFrame`). Só mostram dados e repassam os cliques.
-- **Controller** — recebe o pedido da tela, valida, chama o DAO e devolve o resultado ou a mensagem de erro.
+- **Model:** as classes de dados (`Partida`, `Equipe`…) e os DAOs, que fazem o SQL.
+- **View:** as telas Swing (`JFrame`). Só mostram dados e repassam os cliques.
+- **Controller:** recebe o pedido da tela, valida, chama o DAO e devolve o resultado ou a mensagem de erro.
 
 Por que não colocar tudo no botão? O enunciado proíbe concentrar a lógica nos eventos do JFrame. Separando, cada parte tem uma responsabilidade e pode ser explicada e alterada sozinha.
 

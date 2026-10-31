@@ -1,4 +1,4 @@
-# Guia de Estudo — Banco de Dados `campeonato`
+# Guia de Estudo - Banco de Dados `campeonato`
 
 Este guia explica o banco do sistema para que **qualquer integrante** consiga abrir os scripts, explicar o que cada parte faz e responder às perguntas do professor. Ele é construído junto com o banco: cada etapa concluída acrescenta uma seção.
 
@@ -8,7 +8,7 @@ Este guia explica o banco do sistema para que **qualquer integrante** consiga ab
 | 2 | Regras automáticas (triggers e procedures) | `sql/Champs_procedures_triggers.sql` |
 | 3 | Relatório e JOIN | `sql/Champs_relatorios.sql` |
 | 4 | Como abrir e explicar cada arquivo | todos |
-| 5 | Perguntas e respostas (revisão geral) | — |
+| 5 | Perguntas e respostas (revisão geral) | todos |
 
 ---
 
@@ -90,7 +90,7 @@ CONSTRAINT fk_partida_arbitro
 | `chk_partida_rodada`, `chk_partida_acrescimo`, `chk_partida_gols` | PARTIDA | rodada ≤ 0, acréscimo ou gols negativos |
 | `chk_partida_placar_completo` | PARTIDA | placar pela metade (só gols do mandante) |
 | `chk_partida_placar_por_status` | PARTIDA | jogo encerrado sem placar, ou agendado/cancelado com placar |
-| `uq_equipe_nome`, `uq_campeonato_nome`, `uq_arbitro_registro`, `uq_estadio_nome_cidade` | — | cadastros duplicados |
+| `uq_equipe_nome`, `uq_campeonato_nome`, `uq_arbitro_registro`, `uq_estadio_nome_cidade` | várias tabelas | cadastros duplicados |
 | `uq_jogador_camisa` | JOGADOR | dois jogadores com a mesma camisa no mesmo time |
 | `uq_partida_confronto` | PARTIDA | o mesmo confronto duas vezes na mesma rodada |
 
@@ -125,9 +125,9 @@ Também renomeamos os arquivos com o prefixo do projeto (`Champs_schema.sql`, `C
 
 Veja o README. Em resumo: `bash sql/testar.sh` (com Docker) ou rodar `99_testes.sql` no Workbench num banco recém-criado. O arquivo de testes tem seções:
 
-- **A) Dados de teste** — 1 campeonato, 6 equipes, 3 estádios, 3 árbitros, 8 partidas.
-- **B) Classificação** — confere se os triggers calcularam certo (Tigres FC 1º com 6 pontos, por exemplo). Cada linha mostra `OK` ou `FALHOU`.
-- **D) Erros esperados** — comandos que **devem** ser recusados, como apagar um campeonato que tem partidas.
+- **A) Dados de teste:** 1 campeonato, 6 equipes, 3 estádios, 3 árbitros, 8 partidas.
+- **B) Classificação:** confere se os triggers calcularam certo (Tigres FC 1º com 6 pontos, por exemplo). Cada linha mostra `OK` ou `FALHOU`.
+- **D) Erros esperados:** comandos que **devem** ser recusados, como apagar um campeonato que tem partidas.
 
 ### Perguntas prováveis (seção 1)
 
@@ -325,16 +325,16 @@ O enunciado exige um relatório da **rotina principal**, e a nossa rotina princi
 
 Roteiro para a apresentação: abra os arquivos **nesta ordem** e siga os blocos (cada bloco começa com uma linha `-- -----`).
 
-### `Champs_schema.sql` — a estrutura
+### `Champs_schema.sql`: a estrutura
 
 1. **Cabeçalho**: banco para MySQL 8, ordem de execução `Champs_schema -> Champs_procedures_triggers -> Champs_relatorios`.
 2. **`DROP DATABASE IF EXISTS` / `CREATE DATABASE`**: apaga e recria o banco do zero, com `utf8mb4` (aceita acentos).
 3. **Tabelas simples** (`CAMPEONATO`, `EQUIPE`, `ESTADIO`, `ARBITRO`): mostre a PK `AUTO_INCREMENT`, um `UNIQUE` e um `CHECK` (ex.: `chk_campeonato_datas`).
-4. **`JOGADOR`**: primeiro exemplo de **FK** (`fk_jogador_equipe`) — relação 1:N com `EQUIPE`.
+4. **`JOGADOR`**: primeiro exemplo de **FK** (`fk_jogador_equipe`), relação 1:N com `EQUIPE`.
 5. **`CLASSIFICACAO`**: PK composta (relação N:N), FKs, **colunas geradas** (`saldo_gols`, `pontuacao`).
 6. **`PARTIDA`**: 5 FKs (campeonato, mandante, visitante, estádio, árbitro) e os CHECKs da partida (`chk_partida_times`, `chk_partida_placar_por_status`, `chk_partida_tempo`).
 
-### `Champs_procedures_triggers.sql` — as regras automáticas
+### `Champs_procedures_triggers.sql`: as regras automáticas
 
 1. **Cabeçalho**: o desenho do fluxo (BEFORE valida → grava → AFTER recalcula) e as 4 regras.
 2. **`sp_sincronizar_classificacao`**: os 3 passos (zera, soma partidas encerradas, calcula colocação).
@@ -346,11 +346,11 @@ Roteiro para a apresentação: abra os arquivos **nesta ordem** e siga os blocos
 
 Dica: explique `DELIMITER $$`. Como os blocos têm vários `;` dentro, trocamos temporariamente o fim de comando para `$$`, para o Workbench não cortar a procedure no meio. No final voltamos com `DELIMITER ;`.
 
-### `Champs_relatorios.sql` — o relatório
+### `Champs_relatorios.sql`: o relatório
 
 1. **`sp_relatorio_partidas_periodo`**: parâmetros, os 4 `INNER JOIN`, o filtro de período e a formatação (data e placar).
 
-### `99_testes.sql` — a prova de que funciona
+### `99_testes.sql`: a prova de que funciona
 
 Seções A (dados), B (classificação), C (relatório), D (erros esperados) e E (alterações válidas). Uma boa demonstração: rodar um comando da seção D no Workbench e mostrar a mensagem de erro.
 
