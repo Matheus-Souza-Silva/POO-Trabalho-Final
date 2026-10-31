@@ -323,9 +323,9 @@ POO-Trabalho-Final/
 
 | Nome | GitHub |
 |---|---|
-| _a preencher_ | [Matheus-Souza-Silva](https://github.com/Matheus-Souza-Silva) |
-| Macio Alvez | [macioalves](https://github.com/macioalves) |
-| Pedro | [Pedr0-4raujo](https://github.com/Pedr0-4raujo) |
+| Matheus Souza Silva | [Matheus-Souza-Silva](https://github.com/Matheus-Souza-Silva) |
+| Macio Alves | [macioalves](https://github.com/macioalves) |
+| Pedro de Araujo Freitas | [Pedr0-4raujo](https://github.com/Pedr0-4raujo) |
 
 ---
 
