@@ -18,7 +18,7 @@ public class ManterArbitro extends DAO {
         if (tr.next()) {
             JOptionPane.showMessageDialog(null, "Registro de federação já cadastrado!");
         } else {
-            String query = "INSERT INTO ARBITRO (nome,registro_federacao, categoris) VALUES(?,?,?)";
+            String query = "INSERT INTO ARBITRO (nome,registro_federacao, categoria) VALUES(?,?,?)";
             pst = con.prepareStatement(query);
             pst.setString(1, a.getNome());
             pst.setString(2, a.getRegistro_federacao());
