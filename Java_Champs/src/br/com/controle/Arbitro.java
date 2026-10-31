@@ -1,10 +1,20 @@
 package br.com.controle;
 
 public class Arbitro {
+    private int idArbitro;
     private String nome;
     private String registro_federacao;
     private String categoria;
+    
+    public int getIdArbitro(){
+        return idArbitro;
+    }
 
+    public void setIdArbitro(int idArbitro) {
+        this.idArbitro = idArbitro;
+    }
+
+    
     public String getNome() {
         return nome;
     }
