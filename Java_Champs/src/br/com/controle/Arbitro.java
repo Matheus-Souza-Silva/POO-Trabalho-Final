@@ -5,8 +5,8 @@ public class Arbitro {
     private String nome;
     private String registro_federacao;
     private String categoria;
-    
-    public int getIdArbitro(){
+
+    public int getIdArbitro() {
         return idArbitro;
     }
 
@@ -14,7 +14,6 @@ public class Arbitro {
         this.idArbitro = idArbitro;
     }
 
-    
     public String getNome() {
         return nome;
     }
@@ -37,5 +36,10 @@ public class Arbitro {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    @Override
+    public String toString() {
+        return idArbitro + " - " + nome + " (" + categoria + ")";
     }
 }
