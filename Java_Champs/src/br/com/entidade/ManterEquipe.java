@@ -64,4 +64,27 @@ public class ManterEquipe extends DAO {
         }
         return lista;
     }
+        public Equipe pesquisarRegistro(String termo) throws Exception {
+        Equipe e = null;
+        try {
+            abrirBanco();
+            String query = "SELECT id_equipe, nome, cidade FROM EQUIPE "
+                         + "WHERE id_equipe = ? OR nome LIKE ? LIMIT 1";
+            pst = (PreparedStatement) con.prepareStatement(query);
+            int id = 0;
+            try { id = Integer.parseInt(termo.trim()); } catch (NumberFormatException ex) {}
+            pst.setInt(1, id);
+            pst.setString(2, "%" + termo.trim() + "%");
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                e = new Equipe();
+                e.setIdEquipe(rs.getInt("id_equipe"));
+                e.setNome(rs.getString("nome"));
+                e.setCidade(rs.getString("cidade"));
+            }
+        } finally {
+            fecharBanco();
+        }
+        return e;
+    }
 }
