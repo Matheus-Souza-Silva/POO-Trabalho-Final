@@ -9,6 +9,8 @@ import javax.swing.table.DefaultTableModel;
 
 public class TelaPrincipal extends javax.swing.JFrame {
 
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaPrincipal.class.getName());
+
     // DAOs (Camada de Entidade)
     private final ManterCampeonato daoCampeonato = new ManterCampeonato();
     private final ManterEquipe daoEquipe = new ManterEquipe();
@@ -57,9 +59,33 @@ public class TelaPrincipal extends javax.swing.JFrame {
         recarregarTudo();
     }
 
+    // Helper para travar/habilitar os botões enquanto os campos estiverem vazios
+    private void vincularValidacao(Runnable validador, JTextField... campos) {
+        javax.swing.event.DocumentListener dl = new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                validador.run();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                validador.run();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                validador.run();
+            }
+        };
+        for (JTextField c : campos) {
+            c.getDocument().addDocumentListener(dl);
+        }
+        validador.run();
+    }
+
     private void configurarJanelaCompleta() {
         setTitle("Champs - Sistema de Gestão de Campeonatos (Fases 4 e 5)");
-        setSize(1120, 700);
+        setSize(1140, 700);
         setLocationRelativeTo(null);
         getContentPane().removeAll();
         getContentPane().setLayout(new BorderLayout());
@@ -106,13 +132,25 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         JPanel botoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnSalvar = new JButton("Cadastrar");
+        JButton btnConsultar = new JButton("Consultar (ID/Nome)");
         JButton btnAlterar = new JButton("Alterar");
         JButton btnDeletar = new JButton("Excluir");
         JButton btnLimpar = new JButton("Limpar");
         botoes.add(btnSalvar);
+        botoes.add(btnConsultar);
         botoes.add(btnAlterar);
         botoes.add(btnDeletar);
         botoes.add(btnLimpar);
+
+        vincularValidacao(() -> {
+            boolean camposOk = !txtNomeCamp.getText().trim().isEmpty()
+                    && !txtInicioCamp.getText().trim().isEmpty()
+                    && !txtFimCamp.getText().trim().isEmpty();
+            boolean temId = !txtIdCamp.getText().trim().isEmpty();
+            btnSalvar.setEnabled(camposOk);
+            btnAlterar.setEnabled(camposOk && temId);
+            btnDeletar.setEnabled(temId);
+        }, txtIdCamp, txtNomeCamp, txtInicioCamp, txtFimCamp);
 
         JPanel topo = new JPanel(new BorderLayout());
         topo.add(form, BorderLayout.CENTER);
@@ -132,6 +170,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
 
         btnSalvar.addActionListener(e -> {
+            if (txtNomeCamp.getText().trim().isEmpty() || txtInicioCamp.getText().trim().isEmpty() || txtFimCamp.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Preencha todos os campos antes de cadastrar!");
+                return;
+            }
             try {
                 Campeonato c = new Campeonato();
                 c.setNome(txtNomeCamp.getText().trim());
@@ -146,10 +188,38 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnConsultar.addActionListener(e -> {
+            String termo = txtNomeCamp.getText().trim();
+            if (termo.isEmpty()) {
+                termo = JOptionPane.showInputDialog(this, "Digite o ID ou Nome do Campeonato para consultar:");
+            }
+            if (termo == null || termo.trim().isEmpty()) {
+                return;
+            }
+            try {
+                Campeonato c = daoCampeonato.pesquisarRegistro(termo);
+                if (c != null) {
+                    txtIdCamp.setText(String.valueOf(c.getIdCampeonato()));
+                    txtNomeCamp.setText(c.getNome());
+                    txtInicioCamp.setText(c.getData_inicio());
+                    txtFimCamp.setText(c.getData_fim());
+                    cbStatusCamp.setSelectedItem(c.getStatus());
+                } else {
+                    JOptionPane.showMessageDialog(this, "Nenhum campeonato encontrado para: " + termo);
+                }
+            } catch (Exception ex) {
+                mostrarErro(ex);
+            }
+        });
+
         btnAlterar.addActionListener(e -> {
+            if (txtIdCamp.getText().trim().isEmpty() || txtNomeCamp.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Consulte ou selecione um campeonato e preencha os campos!");
+                return;
+            }
             try {
                 Campeonato c = new Campeonato();
-                c.setIdCampeonato(Integer.parseInt(txtIdCamp.getText()));
+                c.setIdCampeonato(Integer.parseInt(txtIdCamp.getText().trim()));
                 c.setNome(txtNomeCamp.getText().trim());
                 c.setData_inicio(txtInicioCamp.getText().trim());
                 c.setData_fim(txtFimCamp.getText().trim());
@@ -163,11 +233,17 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
 
         btnDeletar.addActionListener(e -> {
+            if (txtIdCamp.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Consulte ou selecione um campeonato para excluir!");
+                return;
+            }
             try {
                 Campeonato c = new Campeonato();
-                c.setIdCampeonato(Integer.parseInt(txtIdCamp.getText()));
+                c.setIdCampeonato(Integer.parseInt(txtIdCamp.getText().trim()));
                 daoCampeonato.deletar(c);
                 JOptionPane.showMessageDialog(this, "Campeonato removido!");
+                txtIdCamp.setText("");
+                txtNomeCamp.setText("");
                 recarregarTudo();
             } catch (Exception ex) {
                 mostrarErro(ex);
@@ -209,13 +285,24 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         JPanel botoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnSalvar = new JButton("Cadastrar");
+        JButton btnConsultar = new JButton("Consultar (ID/Nome)");
         JButton btnAlterar = new JButton("Alterar");
         JButton btnDeletar = new JButton("Excluir");
         JButton btnLimpar = new JButton("Limpar");
         botoes.add(btnSalvar);
+        botoes.add(btnConsultar);
         botoes.add(btnAlterar);
         botoes.add(btnDeletar);
         botoes.add(btnLimpar);
+
+        vincularValidacao(() -> {
+            boolean camposOk = !txtNomeEquipe.getText().trim().isEmpty()
+                    && !txtCidadeEquipe.getText().trim().isEmpty();
+            boolean temId = !txtIdEquipe.getText().trim().isEmpty();
+            btnSalvar.setEnabled(camposOk);
+            btnAlterar.setEnabled(camposOk && temId);
+            btnDeletar.setEnabled(temId);
+        }, txtIdEquipe, txtNomeEquipe, txtCidadeEquipe);
 
         JPanel topo = new JPanel(new BorderLayout());
         topo.add(form, BorderLayout.CENTER);
@@ -232,6 +319,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
 
         btnSalvar.addActionListener(e -> {
+            if (txtNomeEquipe.getText().trim().isEmpty() || txtCidadeEquipe.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Preencha todos os campos antes de cadastrar!");
+                return;
+            }
             try {
                 Equipe eq = new Equipe();
                 eq.setNome(txtNomeEquipe.getText().trim());
@@ -244,10 +335,36 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnConsultar.addActionListener(e -> {
+            String termo = txtNomeEquipe.getText().trim();
+            if (termo.isEmpty()) {
+                termo = JOptionPane.showInputDialog(this, "Digite o ID ou Nome da Equipe para consultar:");
+            }
+            if (termo == null || termo.trim().isEmpty()) {
+                return;
+            }
+            try {
+                Equipe eq = daoEquipe.pesquisarRegistro(termo);
+                if (eq != null) {
+                    txtIdEquipe.setText(String.valueOf(eq.getIdEquipe()));
+                    txtNomeEquipe.setText(eq.getNome());
+                    txtCidadeEquipe.setText(eq.getCidade());
+                } else {
+                    JOptionPane.showMessageDialog(this, "Nenhuma equipe encontrada para: " + termo);
+                }
+            } catch (Exception ex) {
+                mostrarErro(ex);
+            }
+        });
+
         btnAlterar.addActionListener(e -> {
+            if (txtIdEquipe.getText().trim().isEmpty() || txtNomeEquipe.getText().trim().isEmpty() || txtCidadeEquipe.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Consulte ou selecione uma equipe e preencha os campos!");
+                return;
+            }
             try {
                 Equipe eq = new Equipe();
-                eq.setIdEquipe(Integer.parseInt(txtIdEquipe.getText()));
+                eq.setIdEquipe(Integer.parseInt(txtIdEquipe.getText().trim()));
                 eq.setNome(txtNomeEquipe.getText().trim());
                 eq.setCidade(txtCidadeEquipe.getText().trim());
                 daoEquipe.alterar(eq);
@@ -259,11 +376,18 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
 
         btnDeletar.addActionListener(e -> {
+            if (txtIdEquipe.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Consulte ou selecione uma equipe para excluir!");
+                return;
+            }
             try {
                 Equipe eq = new Equipe();
-                eq.setIdEquipe(Integer.parseInt(txtIdEquipe.getText()));
+                eq.setIdEquipe(Integer.parseInt(txtIdEquipe.getText().trim()));
                 daoEquipe.deletar(eq);
                 JOptionPane.showMessageDialog(this, "Equipe excluída!");
+                txtIdEquipe.setText("");
+                txtNomeEquipe.setText("");
+                txtCidadeEquipe.setText("");
                 recarregarTudo();
             } catch (Exception ex) {
                 mostrarErro(ex);
@@ -306,13 +430,25 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         JPanel botoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnSalvar = new JButton("Cadastrar");
+        JButton btnConsultar = new JButton("Consultar (ID/Nome)");
         JButton btnAlterar = new JButton("Alterar");
         JButton btnDeletar = new JButton("Excluir");
         JButton btnLimpar = new JButton("Limpar");
         botoes.add(btnSalvar);
+        botoes.add(btnConsultar);
         botoes.add(btnAlterar);
         botoes.add(btnDeletar);
         botoes.add(btnLimpar);
+
+        vincularValidacao(() -> {
+            boolean camposOk = !txtNomeEstadio.getText().trim().isEmpty()
+                    && !txtCidadeEstadio.getText().trim().isEmpty()
+                    && !txtCapEstadio.getText().trim().isEmpty();
+            boolean temId = !txtIdEstadio.getText().trim().isEmpty();
+            btnSalvar.setEnabled(camposOk);
+            btnAlterar.setEnabled(camposOk && temId);
+            btnDeletar.setEnabled(temId);
+        }, txtIdEstadio, txtNomeEstadio, txtCidadeEstadio, txtCapEstadio);
 
         JPanel topo = new JPanel(new BorderLayout());
         topo.add(form, BorderLayout.CENTER);
@@ -330,6 +466,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
 
         btnSalvar.addActionListener(e -> {
+            if (txtNomeEstadio.getText().trim().isEmpty() || txtCidadeEstadio.getText().trim().isEmpty() || txtCapEstadio.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Preencha todos os campos antes de cadastrar!");
+                return;
+            }
             try {
                 Estadio es = new Estadio();
                 es.setNome(txtNomeEstadio.getText().trim());
@@ -343,10 +483,37 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnConsultar.addActionListener(e -> {
+            String termo = txtNomeEstadio.getText().trim();
+            if (termo.isEmpty()) {
+                termo = JOptionPane.showInputDialog(this, "Digite o ID ou Nome do Estádio para consultar:");
+            }
+            if (termo == null || termo.trim().isEmpty()) {
+                return;
+            }
+            try {
+                Estadio es = daoEstadio.pesquisarRegistro(termo);
+                if (es != null) {
+                    txtIdEstadio.setText(String.valueOf(es.getIdEstadio()));
+                    txtNomeEstadio.setText(es.getNome());
+                    txtCidadeEstadio.setText(es.getCidade());
+                    txtCapEstadio.setText(String.valueOf(es.getCapacidade()));
+                } else {
+                    JOptionPane.showMessageDialog(this, "Nenhum estádio encontrado para: " + termo);
+                }
+            } catch (Exception ex) {
+                mostrarErro(ex);
+            }
+        });
+
         btnAlterar.addActionListener(e -> {
+            if (txtIdEstadio.getText().trim().isEmpty() || txtNomeEstadio.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Consulte ou selecione um estádio e preencha os campos!");
+                return;
+            }
             try {
                 Estadio es = new Estadio();
-                es.setIdEstadio(Integer.parseInt(txtIdEstadio.getText()));
+                es.setIdEstadio(Integer.parseInt(txtIdEstadio.getText().trim()));
                 es.setNome(txtNomeEstadio.getText().trim());
                 es.setCidade(txtCidadeEstadio.getText().trim());
                 es.setCapacidade(Integer.parseInt(txtCapEstadio.getText().trim()));
@@ -359,11 +526,19 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
 
         btnDeletar.addActionListener(e -> {
+            if (txtIdEstadio.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Consulte ou selecione um estádio para excluir!");
+                return;
+            }
             try {
                 Estadio es = new Estadio();
-                es.setIdEstadio(Integer.parseInt(txtIdEstadio.getText()));
+                es.setIdEstadio(Integer.parseInt(txtIdEstadio.getText().trim()));
                 daoEstadio.deletar(es);
                 JOptionPane.showMessageDialog(this, "Estádio excluído!");
+                txtIdEstadio.setText("");
+                txtNomeEstadio.setText("");
+                txtCidadeEstadio.setText("");
+                txtCapEstadio.setText("");
                 recarregarTudo();
             } catch (Exception ex) {
                 mostrarErro(ex);
@@ -407,13 +582,24 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         JPanel botoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnSalvar = new JButton("Cadastrar");
+        JButton btnConsultar = new JButton("Consultar (ID/Nome/Reg)");
         JButton btnAlterar = new JButton("Alterar");
         JButton btnDeletar = new JButton("Excluir");
         JButton btnLimpar = new JButton("Limpar");
         botoes.add(btnSalvar);
+        botoes.add(btnConsultar);
         botoes.add(btnAlterar);
         botoes.add(btnDeletar);
         botoes.add(btnLimpar);
+
+        vincularValidacao(() -> {
+            boolean camposOk = !txtNomeArbitro.getText().trim().isEmpty()
+                    && !txtRegArbitro.getText().trim().isEmpty();
+            boolean temId = !txtIdArbitro.getText().trim().isEmpty();
+            btnSalvar.setEnabled(camposOk);
+            btnAlterar.setEnabled(camposOk && temId);
+            btnDeletar.setEnabled(temId);
+        }, txtIdArbitro, txtNomeArbitro, txtRegArbitro);
 
         JPanel topo = new JPanel(new BorderLayout());
         topo.add(form, BorderLayout.CENTER);
@@ -431,6 +617,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
 
         btnSalvar.addActionListener(e -> {
+            if (txtNomeArbitro.getText().trim().isEmpty() || txtRegArbitro.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Preencha todos os campos antes de cadastrar!");
+                return;
+            }
             try {
                 Arbitro a = new Arbitro();
                 a.setNome(txtNomeArbitro.getText().trim());
@@ -444,10 +634,40 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnConsultar.addActionListener(e -> {
+            String termo = txtNomeArbitro.getText().trim();
+            if (termo.isEmpty()) {
+                termo = txtRegArbitro.getText().trim();
+            }
+            if (termo.isEmpty()) {
+                termo = JOptionPane.showInputDialog(this, "Digite o ID, Nome ou Registro do Árbitro para consultar:");
+            }
+            if (termo == null || termo.trim().isEmpty()) {
+                return;
+            }
+            try {
+                Arbitro a = daoArbitro.pesquisarRegistro(termo);
+                if (a != null) {
+                    txtIdArbitro.setText(String.valueOf(a.getIdArbitro()));
+                    txtNomeArbitro.setText(a.getNome());
+                    txtRegArbitro.setText(a.getRegistro_federacao());
+                    cbCatArbitro.setSelectedItem(a.getCategoria());
+                } else {
+                    JOptionPane.showMessageDialog(this, "Nenhum árbitro encontrado para: " + termo);
+                }
+            } catch (Exception ex) {
+                mostrarErro(ex);
+            }
+        });
+
         btnAlterar.addActionListener(e -> {
+            if (txtIdArbitro.getText().trim().isEmpty() || txtNomeArbitro.getText().trim().isEmpty() || txtRegArbitro.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Consulte ou selecione um árbitro e preencha os campos!");
+                return;
+            }
             try {
                 Arbitro a = new Arbitro();
-                a.setIdArbitro(Integer.parseInt(txtIdArbitro.getText()));
+                a.setIdArbitro(Integer.parseInt(txtIdArbitro.getText().trim()));
                 a.setNome(txtNomeArbitro.getText().trim());
                 a.setRegistro_federacao(txtRegArbitro.getText().trim());
                 a.setCategoria(cbCatArbitro.getSelectedItem().toString());
@@ -460,11 +680,18 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
 
         btnDeletar.addActionListener(e -> {
+            if (txtIdArbitro.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Consulte ou selecione um árbitro para excluir!");
+                return;
+            }
             try {
                 Arbitro a = new Arbitro();
-                a.setIdArbitro(Integer.parseInt(txtIdArbitro.getText()));
+                a.setIdArbitro(Integer.parseInt(txtIdArbitro.getText().trim()));
                 daoArbitro.deletar(a);
                 JOptionPane.showMessageDialog(this, "Árbitro excluído!");
+                txtIdArbitro.setText("");
+                txtNomeArbitro.setText("");
+                txtRegArbitro.setText("");
                 recarregarTudo();
             } catch (Exception ex) {
                 mostrarErro(ex);
@@ -523,11 +750,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
             try {
                 Campeonato c = (Campeonato) cbCampClass.getSelectedItem();
                 Equipe eq = (Equipe) cbEquipeInsc.getSelectedItem();
-                if (c != null && eq != null) {
-                    daoClassificacao.inscreverEquipe(c.getIdCampeonato(), eq.getIdEquipe());
-                    JOptionPane.showMessageDialog(this, "Equipe inscrita no campeonato!");
-                    carregarTabelaClassificacao();
+                if (c == null || eq == null) {
+                    JOptionPane.showMessageDialog(this, "Cadastre e selecione um Campeonato e uma Equipe primeiro!");
+                    return;
                 }
+                daoClassificacao.inscreverEquipe(c.getIdCampeonato(), eq.getIdEquipe());
+                JOptionPane.showMessageDialog(this, "Equipe inscrita no campeonato!");
+                carregarTabelaClassificacao();
             } catch (Exception ex) {
                 mostrarErro(ex);
             }
@@ -627,7 +856,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         pPlacar.add(txtAcrescimo);
         form.add(pPlacar);
 
-        // Ajusta campos de placar/tempo conforme as regras CHECK do banco
         cbStatusPartida.addActionListener(e -> {
             String st = cbStatusPartida.getSelectedItem().toString();
             if (st.equals("AGENDADA") || st.equals("CANCELADA")) {
@@ -636,20 +864,36 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 cbTempoPartida.setSelectedIndex(0);
             } else if (st.equals("ENCERRADA")) {
                 cbTempoPartida.setSelectedIndex(0);
-                if (txtGolsMand.getText().isEmpty()) txtGolsMand.setText("0");
-                if (txtGolsVis.getText().isEmpty()) txtGolsVis.setText("0");
+                if (txtGolsMand.getText().isEmpty()) {
+                    txtGolsMand.setText("0");
+                }
+                if (txtGolsVis.getText().isEmpty()) {
+                    txtGolsVis.setText("0");
+                }
             }
         });
 
         JPanel botoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JButton btnAgendar = new JButton("Registrar / Agendar Partida");
-        JButton btnAtualizar = new JButton("Salvar Placar / Alterar Partida");
+        JButton btnAgendar = new JButton("Registrar / Agendar");
+        JButton btnConsultar = new JButton("Consultar (ID)");
+        JButton btnAtualizar = new JButton("Salvar Placar / Alterar");
         JButton btnExcluir = new JButton("Excluir Partida");
         JButton btnLimpar = new JButton("Limpar");
         botoes.add(btnAgendar);
+        botoes.add(btnConsultar);
         botoes.add(btnAtualizar);
         botoes.add(btnExcluir);
         botoes.add(btnLimpar);
+
+        vincularValidacao(() -> {
+            boolean camposOk = !txtRodadaPartida.getText().trim().isEmpty()
+                    && !txtDataPartida.getText().trim().isEmpty()
+                    && !txtAcrescimo.getText().trim().isEmpty();
+            boolean temId = !txtIdPartida.getText().trim().isEmpty();
+            btnAgendar.setEnabled(camposOk);
+            btnAtualizar.setEnabled(camposOk && temId);
+            btnExcluir.setEnabled(temId);
+        }, txtIdPartida, txtRodadaPartida, txtDataPartida, txtAcrescimo);
 
         JPanel topo = new JPanel(new BorderLayout());
         topo.add(form, BorderLayout.CENTER);
@@ -661,25 +905,17 @@ public class TelaPrincipal extends javax.swing.JFrame {
         tblPartida.getSelectionModel().addListSelectionListener(e -> {
             int row = tblPartida.getSelectedRow();
             if (row >= 0 && row < cachePartidas.size()) {
-                Partida p = cachePartidas.get(row);
-                txtIdPartida.setText(String.valueOf(p.getIdPartida()));
-                txtRodadaPartida.setText(String.valueOf(p.getRodada()));
-                txtDataPartida.setText(p.getDataPartida());
-                cbStatusPartida.setSelectedItem(p.getStatus());
-                cbTempoPartida.setSelectedItem(p.getTempoPartida() == null ? "" : p.getTempoPartida());
-                txtGolsMand.setText(p.getGolsMandante() == null ? "" : String.valueOf(p.getGolsMandante()));
-                txtGolsVis.setText(p.getGolsVisitante() == null ? "" : String.valueOf(p.getGolsVisitante()));
-                txtAcrescimo.setText(String.valueOf(p.getAcrescimo()));
-
-                selecionarComboCampeonato(cbCampPartida, p.getIdCampeonato());
-                selecionarComboEquipe(cbMandante, p.getIdMandante());
-                selecionarComboEquipe(cbVisitante, p.getIdVisitante());
-                selecionarComboEstadio(cbEstadioPartida, p.getIdEstadio());
-                selecionarComboArbitro(cbArbitroPartida, p.getIdArbitro());
+                preencherCamposPartida(cachePartidas.get(row));
             }
         });
 
         btnAgendar.addActionListener(e -> {
+            if (cbCampPartida.getSelectedItem() == null || cbMandante.getSelectedItem() == null
+                    || cbVisitante.getSelectedItem() == null || cbEstadioPartida.getSelectedItem() == null
+                    || cbArbitroPartida.getSelectedItem() == null) {
+                JOptionPane.showMessageDialog(this, "Cadastre Campeonato, Equipes, Estádio e Árbitro antes de agendar!");
+                return;
+            }
             try {
                 Partida p = montarObjetoPartida();
                 daoPartida.inserir(p);
@@ -690,10 +926,31 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnConsultar.addActionListener(e -> {
+            String termo = JOptionPane.showInputDialog(this, "Digite o ID da Partida para consultar:");
+            if (termo == null || termo.trim().isEmpty()) {
+                return;
+            }
+            try {
+                Partida p = daoPartida.pesquisarRegistro(Integer.parseInt(termo.trim()));
+                if (p != null) {
+                    preencherCamposPartida(p);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Nenhuma partida encontrada com ID: " + termo);
+                }
+            } catch (Exception ex) {
+                mostrarErro(ex);
+            }
+        });
+
         btnAtualizar.addActionListener(e -> {
+            if (txtIdPartida.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Consulte ou selecione uma partida antes de alterar!");
+                return;
+            }
             try {
                 Partida p = montarObjetoPartida();
-                p.setIdPartida(Integer.parseInt(txtIdPartida.getText()));
+                p.setIdPartida(Integer.parseInt(txtIdPartida.getText().trim()));
                 daoPartida.alterar(p);
                 JOptionPane.showMessageDialog(this, "Partida atualizada e classificação recalculada!");
                 recarregarTudo();
@@ -703,11 +960,16 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
 
         btnExcluir.addActionListener(e -> {
+            if (txtIdPartida.getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Consulte ou selecione uma partida para excluir!");
+                return;
+            }
             try {
                 Partida p = new Partida();
-                p.setIdPartida(Integer.parseInt(txtIdPartida.getText()));
+                p.setIdPartida(Integer.parseInt(txtIdPartida.getText().trim()));
                 daoPartida.deletar(p);
                 JOptionPane.showMessageDialog(this, "Partida removida e classificação recalculada!");
+                txtIdPartida.setText("");
                 recarregarTudo();
             } catch (Exception ex) {
                 mostrarErro(ex);
@@ -727,6 +989,23 @@ public class TelaPrincipal extends javax.swing.JFrame {
         painel.add(topo, BorderLayout.NORTH);
         painel.add(new JScrollPane(tblPartida), BorderLayout.CENTER);
         return painel;
+    }
+
+    private void preencherCamposPartida(Partida p) {
+        txtIdPartida.setText(String.valueOf(p.getIdPartida()));
+        txtRodadaPartida.setText(String.valueOf(p.getRodada()));
+        txtDataPartida.setText(p.getDataPartida());
+        cbStatusPartida.setSelectedItem(p.getStatus());
+        cbTempoPartida.setSelectedItem(p.getTempoPartida() == null ? "" : p.getTempoPartida());
+        txtGolsMand.setText(p.getGolsMandante() == null ? "" : String.valueOf(p.getGolsMandante()));
+        txtGolsVis.setText(p.getGolsVisitante() == null ? "" : String.valueOf(p.getGolsVisitante()));
+        txtAcrescimo.setText(String.valueOf(p.getAcrescimo()));
+
+        selecionarComboCampeonato(cbCampPartida, p.getIdCampeonato());
+        selecionarComboEquipe(cbMandante, p.getIdMandante());
+        selecionarComboEquipe(cbVisitante, p.getIdVisitante());
+        selecionarComboEstadio(cbEstadioPartida, p.getIdEstadio());
+        selecionarComboArbitro(cbArbitroPartida, p.getIdArbitro());
     }
 
     private Partida montarObjetoPartida() {
@@ -756,7 +1035,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
     // =========================================================================
     private void recarregarTudo() {
         try {
-            // 1. Campeonatos
             ArrayList<Campeonato> camps = daoCampeonato.pesquisarTudo();
             DefaultTableModel mCamp = (DefaultTableModel) tblCampeonato.getModel();
             mCamp.setRowCount(0);
@@ -768,7 +1046,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 cbCampPartida.addItem(c);
             }
 
-            // 2. Equipes
             ArrayList<Equipe> equipes = daoEquipe.pesquisarTudo();
             DefaultTableModel mEq = (DefaultTableModel) tblEquipe.getModel();
             mEq.setRowCount(0);
@@ -782,7 +1059,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 cbVisitante.addItem(eq);
             }
 
-            // 3. Estádios
             ArrayList<Estadio> estadios = daoEstadio.pesquisarTudo();
             DefaultTableModel mEst = (DefaultTableModel) tblEstadio.getModel();
             mEst.setRowCount(0);
@@ -792,7 +1068,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 cbEstadioPartida.addItem(es);
             }
 
-            // 4. Árbitros
             ArrayList<Arbitro> arbitros = daoArbitro.pesquisarTudo();
             DefaultTableModel mArb = (DefaultTableModel) tblArbitro.getModel();
             mArb.setRowCount(0);
@@ -802,10 +1077,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 cbArbitroPartida.addItem(a);
             }
 
-            // 5. Classificação
             carregarTabelaClassificacao();
 
-            // 6. Partidas
             cachePartidas = daoPartida.pesquisarTudo();
             DefaultTableModel mPart = (DefaultTableModel) tblPartida.getModel();
             mPart.setRowCount(0);
@@ -887,7 +1160,20 @@ public class TelaPrincipal extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -899,8 +1185,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (Exception ex) {
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         java.awt.EventQueue.invokeLater(() -> new TelaPrincipal().setVisible(true));
     }
+
 }
