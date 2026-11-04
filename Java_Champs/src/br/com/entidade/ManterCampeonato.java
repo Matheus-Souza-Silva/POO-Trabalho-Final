@@ -70,4 +70,29 @@ public class ManterCampeonato extends DAO {
         }
         return lista;
     }
+        public Campeonato pesquisarRegistro(String termo) throws Exception {
+        Campeonato c = null;
+        try {
+            abrirBanco();
+            String query = "SELECT id_campeonato, nome, data_inicio, data_fim, status FROM CAMPEONATO "
+                         + "WHERE id_campeonato = ? OR nome LIKE ? LIMIT 1";
+            pst = (PreparedStatement) con.prepareStatement(query);
+            int id = 0;
+            try { id = Integer.parseInt(termo.trim()); } catch (NumberFormatException e) {}
+            pst.setInt(1, id);
+            pst.setString(2, "%" + termo.trim() + "%");
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                c = new Campeonato();
+                c.setIdCampeonato(rs.getInt("id_campeonato"));
+                c.setNome(rs.getString("nome"));
+                c.setData_inicio(rs.getString("data_inicio"));
+                c.setData_fim(rs.getString("data_fim"));
+                c.setStatus(rs.getString("status"));
+            }
+        } finally {
+            fecharBanco();
+        }
+        return c;
+    }
 }
