@@ -67,4 +67,30 @@ public class ManterArbitro extends DAO {
         }
         return lista;
     }
+        public Arbitro pesquisarRegistro(String termo) throws Exception {
+        Arbitro a = null;
+        try {
+            abrirBanco();
+            String query = "SELECT id_arbitro, nome, registro_federacao, categoria FROM ARBITRO "
+                         + "WHERE id_arbitro = ? OR nome LIKE ? OR registro_federacao LIKE ? LIMIT 1";
+            pst = (PreparedStatement) con.prepareStatement(query);
+            int id = 0;
+            try { id = Integer.parseInt(termo.trim()); } catch (NumberFormatException ex) {}
+            pst.setInt(1, id);
+            pst.setString(2, "%" + termo.trim() + "%");
+            pst.setString(3, "%" + termo.trim() + "%");
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                a = new Arbitro();
+                a.setIdArbitro(rs.getInt("id_arbitro"));
+                a.setNome(rs.getString("nome"));
+                a.setRegistro_federacao(rs.getString("registro_federacao"));
+                a.setCategoria(rs.getString("categoria"));
+            }
+        } finally {
+            fecharBanco();
+        }
+        return a;
+    }
+
 }
