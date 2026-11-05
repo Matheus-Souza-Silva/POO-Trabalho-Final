@@ -1,7 +1,8 @@
 package br.com.entidade;
 
-import br.com.controle.Classificao;
+import br.com.controle.Classificacao;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class ManterClassificacao extends DAO {
@@ -49,9 +50,32 @@ public class ManterClassificacao extends DAO {
         }
     }
 
+    public Classificacao pesquisarRegistro(int idCampeonato, int idEquipe) throws Exception {
+        Classificacao cl = null;
+        try {
+            abrirBanco();
+            String query = "SELECT c.id_campeonato, c.id_equipe, e.nome AS nome_equipe, "
+                    + "c.colocacao_equipe, c.partidas_jogadas, c.vitorias, c.empates, c.derrotas, "
+                    + "c.gols_marcados, c.gols_sofridos, c.saldo_gols, c.pontuacao, c.status_atual "
+                    + "FROM CLASSIFICACAO c "
+                    + "INNER JOIN EQUIPE e ON e.id_equipe = c.id_equipe "
+                    + "WHERE c.id_campeonato = ? AND c.id_equipe = ?";
+            pst = (PreparedStatement) con.prepareStatement(query);
+            pst.setInt(1, idCampeonato);
+            pst.setInt(2, idEquipe);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                cl = montarClassificacao(rs);
+            }
+        } finally {
+            fecharBanco();
+        }
+        return cl;
+    }
+
     // Lista a tabela de classificação com INNER JOIN em EQUIPE
-    public ArrayList<Classificao> listarPorCampeonato(int idCampeonato) throws Exception {
-        ArrayList<Classificao> lista = new ArrayList<>();
+    public ArrayList<Classificacao> listarPorCampeonato(int idCampeonato) throws Exception {
+        ArrayList<Classificacao> lista = new ArrayList<>();
         try {
             abrirBanco();
             String query = "SELECT c.id_campeonato, c.id_equipe, e.nome AS nome_equipe, "
@@ -65,26 +89,30 @@ public class ManterClassificacao extends DAO {
             pst.setInt(1, idCampeonato);
             rs = pst.executeQuery();
             while (rs.next()) {
-                Classificao cl = new Classificao();
-                cl.setIdCampeonato(rs.getInt("id_campeonato"));
-                cl.setIdEquipe(rs.getInt("id_equipe"));
-                cl.setNomeEquipe(rs.getString("nome_equipe"));
-                int coloc = rs.getInt("colocacao_equipe");
-                cl.setColocacaoEquipe(rs.wasNull() ? null : coloc);
-                cl.setPartidasJogadas(rs.getInt("partidas_jogadas"));
-                cl.setVitorias(rs.getInt("vitorias"));
-                cl.setEmpates(rs.getInt("empates"));
-                cl.setDerrotas(rs.getInt("derrotas"));
-                cl.setGolsMarcados(rs.getInt("gols_marcados"));
-                cl.setGolsSofridos(rs.getInt("gols_sofridos"));
-                cl.setSaldoGols(rs.getInt("saldo_gols"));
-                cl.setPontuacao(rs.getInt("pontuacao"));
-                cl.setStatusAtual(rs.getString("status_atual"));
-                lista.add(cl);
+                lista.add(montarClassificacao(rs));
             }
         } finally {
             fecharBanco();
         }
         return lista;
+    }
+
+    private Classificacao montarClassificacao(ResultSet rs) throws Exception {
+        Classificacao cl = new Classificacao();
+        cl.setIdCampeonato(rs.getInt("id_campeonato"));
+        cl.setIdEquipe(rs.getInt("id_equipe"));
+        cl.setNomeEquipe(rs.getString("nome_equipe"));
+        int coloc = rs.getInt("colocacao_equipe");
+        cl.setColocacaoEquipe(rs.wasNull() ? null : coloc);
+        cl.setPartidasJogadas(rs.getInt("partidas_jogadas"));
+        cl.setVitorias(rs.getInt("vitorias"));
+        cl.setEmpates(rs.getInt("empates"));
+        cl.setDerrotas(rs.getInt("derrotas"));
+        cl.setGolsMarcados(rs.getInt("gols_marcados"));
+        cl.setGolsSofridos(rs.getInt("gols_sofridos"));
+        cl.setSaldoGols(rs.getInt("saldo_gols"));
+        cl.setPontuacao(rs.getInt("pontuacao"));
+        cl.setStatusAtual(rs.getString("status_atual"));
+        return cl;
     }
 }

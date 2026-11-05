@@ -81,6 +81,10 @@ CALL sp_relatorio_partidas_periodo(1, '2026-09-01', '2026-09-30');
 -- ESPERADO: 2 linhas (os dois jogos de 05/09) - a data final entra no periodo
 CALL sp_relatorio_partidas_periodo(1, '2026-09-05', '2026-09-05');
 
+-- ESPERADO: 6 linhas; a 1a: Copa Regional 2026 | 1 | Tigres FC | Sao Paulo | 6 | 2 | 2 | 0 | 0 | 5 | 3 | 2 | 100.0 | 1 | 1 | 2 | 2 | A_JOGAR
+-- (relatorio principal: classificacao + dados das partidas)
+CALL sp_relatorio_classificacao(1);
+
 -- ---------------------------------------------------------------------
 -- D) ERROS ESPERADOS (cada comando abaixo DEVE ser recusado pelo banco)
 -- ---------------------------------------------------------------------
@@ -121,9 +125,29 @@ UPDATE PARTIDA SET tempo_partida = 'PRIMEIRO_TEMPO' WHERE id_partida = 1;
 -- ESPERADO ERRO: Equipe possui partidas neste campeonato
 DELETE FROM CLASSIFICACAO WHERE id_campeonato = 1 AND id_equipe = 1;
 
+-- Jogador: primeiro cadastro valido na equipe 1
+INSERT INTO JOGADOR (nome, posicao, numero_camisa, data_nascimento, id_equipe)
+VALUES ('Rafael Alves', 'GOLEIRO', 1, '1995-03-12', 1);
+
+-- UNIQUE (id_equipe, numero_camisa): camisa repetida na mesma equipe
+-- ESPERADO ERRO: uq_jogador_camisa
+INSERT INTO JOGADOR (nome, posicao, numero_camisa, data_nascimento, id_equipe)
+VALUES ('Outro Goleiro', 'GOLEIRO', 1, '1998-01-01', 1);
+
+-- CHECK: camisa fora do intervalo 1..99
+-- ESPERADO ERRO: chk_jogador_camisa
+INSERT INTO JOGADOR (nome, posicao, numero_camisa, data_nascimento, id_equipe)
+VALUES ('Camisa Invalida', 'ATACANTE', 100, '2000-01-01', 1);
+
 -- ---------------------------------------------------------------------
 -- E) ALTERACOES VALIDAS (devem funcionar; alteram os dados de teste)
 -- ---------------------------------------------------------------------
+
+-- O jogador valido foi gravado e aparece pelo JOIN com EQUIPE
+SELECT IF((SELECT COUNT(*) FROM JOGADOR j
+            INNER JOIN EQUIPE e ON e.id_equipe = j.id_equipe
+            WHERE e.nome = 'Tigres FC' AND j.numero_camisa = 1) = 1,
+          'OK', 'FALHOU') AS 'Jogador cadastrado na equipe';
 
 -- Lancar o placar de um jogo agendado nao conflita com ele mesmo
 UPDATE PARTIDA SET status = 'ENCERRADA', gols_mandante = 2, gols_visitante = 0 WHERE id_partida = 6;

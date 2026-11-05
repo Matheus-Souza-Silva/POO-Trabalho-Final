@@ -2,7 +2,7 @@
 # =====================================================================
 # testar.sh  |  Roda os scripts num MySQL descartavel (Docker) e confere
 #               o resultado do 99_testes.sql.
-# Uso: bash sql/testar.sh      (precisa do Docker aberto)
+# Uso: bash SQL_Champs/testar.sh      (precisa do Docker aberto)
 # Sem Docker: rode os 3 scripts Champs_*.sql e o 99 no Workbench e confira os 'OK'.
 # =====================================================================
 

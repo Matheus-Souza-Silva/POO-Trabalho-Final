@@ -2,10 +2,23 @@ package br.com.entidade;
 
 import br.com.controle.Partida;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.ArrayList;
 
 public class ManterPartida extends DAO {
+
+    // Consulta base com INNER JOIN: troca os codigos pelos nomes das tabelas
+    // relacionadas (campeonato, mandante, visitante, estadio e arbitro).
+    private static final String SELECT_PARTIDA
+            = "SELECT p.*, c.nome AS nome_camp, m.nome AS nome_mand, "
+            + "v.nome AS nome_vis, es.nome AS nome_est, a.nome AS nome_arb "
+            + "FROM PARTIDA p "
+            + "INNER JOIN CAMPEONATO c ON c.id_campeonato = p.id_campeonato "
+            + "INNER JOIN EQUIPE m ON m.id_equipe = p.id_mandante "
+            + "INNER JOIN EQUIPE v ON v.id_equipe = p.id_visitante "
+            + "INNER JOIN ESTADIO es ON es.id_estadio = p.id_estadio "
+            + "INNER JOIN ARBITRO a ON a.id_arbitro = p.id_arbitro ";
 
     public void inserir(Partida p) throws Exception {
         try {
@@ -80,96 +93,91 @@ public class ManterPartida extends DAO {
         }
     }
 
+    /**
+     * Pesquisa individual por codigo, nome de equipe, campeonato, estadio
+     * ou arbitro. O botao Consultar do CRUD principal usa este metodo.
+     */
+    public Partida pesquisarRegistro(String termo) throws Exception {
+        if (termo == null || termo.trim().isEmpty()) {
+            return null;
+        }
+
+        String busca = termo.trim();
+        Integer codigo = null;
+        try {
+            codigo = Integer.valueOf(busca);
+        } catch (NumberFormatException ex) {
+            // Texto nao numerico: a busca sera feita pelos nomes.
+        }
+
+        Partida p = null;
+        try {
+            abrirBanco();
+            String query = SELECT_PARTIDA
+                    + "WHERE p.id_partida = ? OR m.nome LIKE ? OR v.nome LIKE ? "
+                    + "OR c.nome LIKE ? OR es.nome LIKE ? OR a.nome LIKE ? "
+                    + "ORDER BY (p.id_partida = ?) DESC, p.data_partida DESC, p.id_partida DESC "
+                    + "LIMIT 1";
+            pst = (PreparedStatement) con.prepareStatement(query);
+            pst.setInt(1, codigo == null ? -1 : codigo);
+            pst.setString(2, "%" + busca + "%");
+            pst.setString(3, "%" + busca + "%");
+            pst.setString(4, "%" + busca + "%");
+            pst.setString(5, "%" + busca + "%");
+            pst.setString(6, "%" + busca + "%");
+            pst.setInt(7, codigo == null ? -1 : codigo);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                p = montarPartida(rs);
+            }
+        } finally {
+            fecharBanco();
+        }
+        return p;
+    }
+
     public ArrayList<Partida> pesquisarTudo() throws Exception {
         ArrayList<Partida> lista = new ArrayList<>();
         try {
             abrirBanco();
-            String query = "SELECT p.*, c.nome AS nome_camp, m.nome AS nome_mand, "
-                    + "v.nome AS nome_vis, es.nome AS nome_est, a.nome AS nome_arb "
-                    + "FROM PARTIDA p "
-                    + "INNER JOIN CAMPEONATO c ON c.id_campeonato = p.id_campeonato "
-                    + "INNER JOIN EQUIPE m ON m.id_equipe = p.id_mandante "
-                    + "INNER JOIN EQUIPE v ON v.id_equipe = p.id_visitante "
-                    + "INNER JOIN ESTADIO es ON es.id_estadio = p.id_estadio "
-                    + "INNER JOIN ARBITRO a ON a.id_arbitro = p.id_arbitro "
-                    + "ORDER BY p.id_campeonato, p.rodada, p.data_partida";
-            pst = (PreparedStatement) con.prepareStatement(query);
+            pst = (PreparedStatement) con.prepareStatement(SELECT_PARTIDA
+                    + "ORDER BY p.id_partida");
             rs = pst.executeQuery();
             while (rs.next()) {
-                Partida p = new Partida();
-                p.setIdPartida(rs.getInt("id_partida"));
-                p.setIdCampeonato(rs.getInt("id_campeonato"));
-                p.setRodada(rs.getInt("rodada"));
-                p.setIdMandante(rs.getInt("id_mandante"));
-                p.setIdVisitante(rs.getInt("id_visitante"));
-                p.setIdEstadio(rs.getInt("id_estadio"));
-                p.setIdArbitro(rs.getInt("id_arbitro"));
-                p.setDataPartida(rs.getString("data_partida"));
-
-                int gm = rs.getInt("gols_mandante");
-                p.setGolsMandante(rs.wasNull() ? null : gm);
-
-                int gv = rs.getInt("gols_visitante");
-                p.setGolsVisitante(rs.wasNull() ? null : gv);
-
-                p.setAcrescimo(rs.getInt("acrescimo"));
-                p.setStatus(rs.getString("status"));
-                p.setTempoPartida(rs.getString("tempo_partida"));
-
-                p.setNomeCampeonato(rs.getString("nome_camp"));
-                p.setNomeMandante(rs.getString("nome_mand"));
-                p.setNomeVisitante(rs.getString("nome_vis"));
-                p.setNomeEstadio(rs.getString("nome_est"));
-                p.setNomeArbitro(rs.getString("nome_arb"));
-                lista.add(p);
+                lista.add(montarPartida(rs));
             }
         } finally {
             fecharBanco();
         }
         return lista;
     }
-        public Partida pesquisarRegistro(int idPartida) throws Exception {
-        Partida p = null;
-        try {
-            abrirBanco();
-            String query = "SELECT p.*, c.nome AS nome_camp, m.nome AS nome_mand, "
-                    + "v.nome AS nome_vis, es.nome AS nome_est, a.nome AS nome_arb "
-                    + "FROM PARTIDA p "
-                    + "INNER JOIN CAMPEONATO c ON c.id_campeonato = p.id_campeonato "
-                    + "INNER JOIN EQUIPE m ON m.id_equipe = p.id_mandante "
-                    + "INNER JOIN EQUIPE v ON v.id_equipe = p.id_visitante "
-                    + "INNER JOIN ESTADIO es ON es.id_estadio = p.id_estadio "
-                    + "INNER JOIN ARBITRO a ON a.id_arbitro = p.id_arbitro "
-                    + "WHERE p.id_partida = ?";
-            pst = (PreparedStatement) con.prepareStatement(query);
-            pst.setInt(1, idPartida);
-            rs = pst.executeQuery();
-            if (rs.next()) {
-                p = new Partida();
-                p.setIdPartida(rs.getInt("id_partida"));
-                p.setIdCampeonato(rs.getInt("id_campeonato"));
-                p.setRodada(rs.getInt("rodada"));
-                p.setIdMandante(rs.getInt("id_mandante"));
-                p.setIdVisitante(rs.getInt("id_visitante"));
-                p.setIdEstadio(rs.getInt("id_estadio"));
-                p.setIdArbitro(rs.getInt("id_arbitro"));
-                p.setDataPartida(rs.getString("data_partida"));
-                int gm = rs.getInt("gols_mandante");
-                p.setGolsMandante(rs.wasNull() ? null : gm);
-                int gv = rs.getInt("gols_visitante");
-                p.setGolsVisitante(rs.wasNull() ? null : gv);
-                p.setAcrescimo(rs.getInt("acrescimo"));
-                p.setStatus(rs.getString("status"));
-                p.setTempoPartida(rs.getString("tempo_partida"));
-                p.setNomeCampeonato(rs.getString("nome_camp"));
-                p.setNomeMandante(rs.getString("nome_mand"));
-                p.setNomeVisitante(rs.getString("nome_vis"));
-                p.setNomeEstadio(rs.getString("nome_est"));
-                p.setNomeArbitro(rs.getString("nome_arb"));
-            }
-        } finally {
-            fecharBanco();
-        }
+
+    private Partida montarPartida(ResultSet rs) throws Exception {
+        Partida p = new Partida();
+        p.setIdPartida(rs.getInt("id_partida"));
+        p.setIdCampeonato(rs.getInt("id_campeonato"));
+        p.setRodada(rs.getInt("rodada"));
+        p.setIdMandante(rs.getInt("id_mandante"));
+        p.setIdVisitante(rs.getInt("id_visitante"));
+        p.setIdEstadio(rs.getInt("id_estadio"));
+        p.setIdArbitro(rs.getInt("id_arbitro"));
+        p.setDataPartida(rs.getString("data_partida"));
+
+        int gm = rs.getInt("gols_mandante");
+        p.setGolsMandante(rs.wasNull() ? null : gm);
+
+        int gv = rs.getInt("gols_visitante");
+        p.setGolsVisitante(rs.wasNull() ? null : gv);
+
+        p.setAcrescimo(rs.getInt("acrescimo"));
+        p.setStatus(rs.getString("status"));
+        p.setTempoPartida(rs.getString("tempo_partida"));
+
+        p.setNomeCampeonato(rs.getString("nome_camp"));
+        p.setNomeMandante(rs.getString("nome_mand"));
+        p.setNomeVisitante(rs.getString("nome_vis"));
+        p.setNomeEstadio(rs.getString("nome_est"));
+        p.setNomeArbitro(rs.getString("nome_arb"));
         return p;
     }
 }

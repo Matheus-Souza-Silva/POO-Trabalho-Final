@@ -2,6 +2,7 @@ package br.com.entidade;
 
 import br.com.controle.Estadio;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class ManterEstadio extends DAO {
@@ -47,48 +48,64 @@ public class ManterEstadio extends DAO {
         }
     }
 
+    public Estadio pesquisarRegistro(String termo) throws Exception {
+        if (termo == null || termo.trim().isEmpty()) {
+            return null;
+        }
+
+        String busca = termo.trim();
+        Integer codigo = null;
+        try {
+            codigo = Integer.valueOf(busca);
+        } catch (NumberFormatException ex) {
+            // Texto nao numerico: a busca sera feita apenas por nome/registro.
+        }
+        Estadio estadio = null;
+
+        try {
+            abrirBanco();
+            String query = "SELECT id_estadio, nome, cidade, capacidade FROM ESTADIO "
+                    + "WHERE id_estadio = ? OR nome LIKE ? OR cidade LIKE ? "
+                    + "ORDER BY (id_estadio = ?) DESC, nome "
+                    + "LIMIT 1";
+            pst = (PreparedStatement) con.prepareStatement(query);
+            pst.setInt(1, codigo == null ? -1 : codigo);
+            pst.setString(2, "%" + busca + "%");
+            pst.setString(3, "%" + busca + "%");
+            pst.setInt(4, codigo == null ? -1 : codigo);
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                estadio = montarEstadio(rs);
+            }
+        } finally {
+            fecharBanco();
+        }
+        return estadio;
+    }
+
     public ArrayList<Estadio> pesquisarTudo() throws Exception {
         ArrayList<Estadio> lista = new ArrayList<>();
         try {
             abrirBanco();
-            String query = "SELECT id_estadio, nome, cidade, capacidade FROM ESTADIO ORDER BY nome";
+            String query = "SELECT id_estadio, nome, cidade, capacidade FROM ESTADIO ORDER BY id_estadio";
             pst = (PreparedStatement) con.prepareStatement(query);
             rs = pst.executeQuery();
             while (rs.next()) {
-                Estadio es = new Estadio();
-                es.setIdEstadio(rs.getInt("id_estadio"));
-                es.setNome(rs.getString("nome"));
-                es.setCidade(rs.getString("cidade"));
-                es.setCapacidade(rs.getInt("capacidade"));
-                lista.add(es);
+                lista.add(montarEstadio(rs));
             }
         } finally {
             fecharBanco();
         }
         return lista;
     }
-        public Estadio pesquisarRegistro(String termo) throws Exception {
-        Estadio es = null;
-        try {
-            abrirBanco();
-            String query = "SELECT id_estadio, nome, cidade, capacidade FROM ESTADIO "
-                         + "WHERE id_estadio = ? OR nome LIKE ? LIMIT 1";
-            pst = (PreparedStatement) con.prepareStatement(query);
-            int id = 0;
-            try { id = Integer.parseInt(termo.trim()); } catch (NumberFormatException ex) {}
-            pst.setInt(1, id);
-            pst.setString(2, "%" + termo.trim() + "%");
-            rs = pst.executeQuery();
-            if (rs.next()) {
-                es = new Estadio();
-                es.setIdEstadio(rs.getInt("id_estadio"));
-                es.setNome(rs.getString("nome"));
-                es.setCidade(rs.getString("cidade"));
-                es.setCapacidade(rs.getInt("capacidade"));
-            }
-        } finally {
-            fecharBanco();
-        }
+
+    private Estadio montarEstadio(ResultSet rs) throws Exception {
+        Estadio es = new Estadio();
+        es.setIdEstadio(rs.getInt("id_estadio"));
+        es.setNome(rs.getString("nome"));
+        es.setCidade(rs.getString("cidade"));
+        es.setCapacidade(rs.getInt("capacidade"));
         return es;
     }
 }
