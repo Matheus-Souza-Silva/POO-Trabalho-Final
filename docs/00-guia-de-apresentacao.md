@@ -137,11 +137,17 @@ POO-Trabalho-Final/
 └──────────────────────────────────────────────────────────────┘
 ```
 
-### 3.2 Onde está o “Controller”?
+### 3.2 Onde está o “Controller”? Qual MVC?
 
-Não existe uma classe `Controller` separada. No projeto, a **própria `TelaPrincipal` faz o papel de controller**: os `ActionListener` dos botões leem os campos, validam, montam o objeto e chamam o DAO. A separação principal demonstrada é **View × DAO × Model × Banco**.
+O projeto segue o **MVC didático do professor**, não o MVC clássico de 1990 (Smalltalk-80/GoF):
 
-Isso é aceitável para o escopo do trabalho, mas é bom saber a crítica: a tela acumula muita responsabilidade (2.073 linhas). Uma evolução natural seria extrair classes de controller/serviço e quebrar a tela em painéis menores.
+- `br.com.controle` = **Model** (classes de domínio; o nome “controle” é o do curso);
+- `br.com.entidade` = **DAO/persistência**;
+- `br.com.visao` = **View** (`JFrame`).
+
+Não existe uma classe `Controller` separada. Nas aulas 007–010 do [repositório do professor](https://github.com/Matheus-Souza-Silva/POO), o botão do `JFrame` cria o model, chama `Manter...` e este executa o SQL — exatamente o padrão do projeto. No MVC clássico de 1990, o Controller é um objeto que interpreta a entrada e separa a View do Model; se o professor perguntar a diferença, explique que o curso usa a versão simplificada em três camadas e que a `TelaPrincipal` acumula o papel de controller.
+
+Para o critério do trabalho, isso está **alinhado com o que foi ensinado**. A crítica de engenharia é outra: a `TelaPrincipal` ficou com 2.073 linhas e poderia ser quebrada em painéis/controllers menores — uma evolução, não um requisito do MVC do curso.
 
 ### 3.3 Por que essa separação importa
 
@@ -470,7 +476,7 @@ Create, Read, Update, Delete: inserir, consultar, alterar e excluir. No SQL: `IN
 Campeonato, Equipe, Estádio e Árbitro. Jogador é o CRUD extra; Partida é o principal.
 
 **6. O que é MVC no projeto?**
-`br.com.controle` é o Model; `br.com.entidade` é o DAO; `br.com.visao` é a View. O controller está nos eventos da tela.
+`br.com.controle` é o Model; `br.com.entidade` é o DAO; `br.com.visao` é a View. É o MVC didático do professor (aulas 007–010), em que o controller está nos eventos da tela; não há classe `Controller` separada.
 
 **7. Onde está o JDBC?**
 Em `DAO` (conexão) e nas classes `Manter...` (`PreparedStatement`, `ResultSet`). As procedures usam `CallableStatement` em `ManterRelatorio`.
@@ -507,9 +513,11 @@ O professor pode perguntar “o que você faria diferente?”. Estas são as lim
 
 ### 12.1 A conexão não é fechada em todos os casos
 
-`DAO.fecharBanco()` fecha apenas o `PreparedStatement`; **não fecha `ResultSet` nem `Connection`**. Cada operação abre uma conexão nova em `abrirBanco()`. Na prática, as conexões antigas ficam abertas até o garbage collector, o que pode esgotar o pool do MySQL em uso prolongado.
+`DAO.fecharBanco()` fecha apenas o `PreparedStatement`; **não fecha a `Connection`**. O `ResultSet` é fechado indiretamente quando o statement é fechado (comportamento do JDBC), mas não há `rs.close()` explícito. Cada operação abre uma conexão nova em `abrirBanco()`. Na prática, as conexões antigas ficam abertas até o garbage collector ou até o `wait_timeout` do MySQL, o que pode esgotar o limite de conexões (`max_connections`) em uso prolongado.
 
-- **Resposta curta:** “O `finally` garante o fechamento do statement, mas a conexão não é fechada; é um ponto de melhoria.”
+Esse esqueleto é o mesmo do `DAO` do professor (aula 010): é uma **simplificação didática**, não uma decisão de arquitetura. No projeto, como cada operação abre uma conexão nova, ela vira um vazamento real. O `ManterRelatorio` é a exceção e fecha a conexão explicitamente.
+
+- **Resposta curta:** “O `finally` garante o fechamento do statement, mas a `Connection` não é fechada; é o mesmo esqueleto didático do professor, e no projeto isso é um ponto de melhoria.”
 - **Como corrigir:** fechar `rs`, `pst` e `con` no `finally` (ou usar try-with-resources e um pool).
 
 ### 12.2 O driver usa o nome antigo

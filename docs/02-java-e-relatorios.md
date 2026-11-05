@@ -93,6 +93,8 @@ visao  ──────►  entidade  ──────►  controle
          todos podem usar as classes de modelo
 ```
 
+> **Qual MVC é este?** É o MVC didático do professor (aulas 007–010 do [repositório POO](https://github.com/Matheus-Souza-Silva/POO)): `controle` = Model, `entidade` = DAO, `visao` = View, e o controller está no evento do botão do `JFrame`. O projeto segue esse desenho; não existe classe `Controller` separada. O MVC clássico de 1990 (Smalltalk-80/GoF) é outro modelo, com um objeto Controller dedicado; não é o que o curso usa.
+
 - A `visao` importa `br.com.controle.*` e `br.com.entidade.*`.
 - As classes `Manter...` importam `br.com.controle` (para receber/devolver objetos) e `java.sql`.
 - O `controle` **não** importa `entidade` nem `visao`: as classes de modelo são independentes.
@@ -2306,7 +2308,7 @@ btnRelClassificacao
    Não. O Java só exibe; o cálculo é do trigger/procedure no MySQL.
 
 2. **“Onde está o Controller?”**
-   Não há classe separada; os `ActionListener` da `TelaPrincipal` fazem esse papel.
+   Não há classe separada: o evento do botão na `TelaPrincipal` faz esse papel. Esse é o MVC didático do professor (`controle` = Model, `entidade` = DAO, `visao` = View); o MVC clássico de 1990 teria um objeto Controller dedicado.
 
 3. **“Por que a conexão não é fechada?”**
    `fecharBanco()` fecha só o `PreparedStatement`; é uma limitação. `ManterRelatorio` é a exceção e fecha a conexão.
@@ -2526,7 +2528,7 @@ Um modo de impressão que ajusta a tabela à largura da página.
 `controle` = Model; `entidade` = DAO; `visao` = View; o controller está nos eventos da tela.
 
 **44. Por que não há uma classe Controller?**
-Porque o projeto optou por deixar a tela coordenar as ações; é uma simplificação aceitável, mas a tela ficou grande.
+Porque o MVC do professor é o didático em três camadas (`controle` = Model, `entidade` = DAO, `visao` = View); o controller está no evento do botão. O MVC clássico de 1990 teria um Controller dedicado. A crítica é que a tela ficou grande, não que o padrão do curso esteja ausente.
 
 **45. O que é um DAO?**
 Data Access Object: classe que isola o SQL e monta os objetos.

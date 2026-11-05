@@ -35,7 +35,7 @@ Create, Read, Update, Delete: inserir, consultar, alterar e excluir. No SQL: `IN
 4 CRUDs simples, 1 CRUD extra, 1 CRUD principal com relacionamentos, consulta com JOIN, relatório da rotina principal, MySQL com PK/FK, Java + POO + Swing + JDBC + MVC, pesquisa individual e validação de campos.
 
 **9. O que é MVC no projeto?**
-`br.com.controle` = Model; `br.com.entidade` = DAO; `br.com.visao` = View. O controller está nos eventos da tela.
+`br.com.controle` = Model; `br.com.entidade` = DAO; `br.com.visao` = View. É o MVC didático do professor (aulas 007–010), com o controller no evento do botão; não há classe `Controller` separada. O MVC clássico de 1990 é outro modelo.
 
 **10. Por que a classificação é automática?**
 Porque um trigger `AFTER` em `PARTIDA` chama `sp_sincronizar_classificacao`, que recalcula os números a cada insert/update/delete.
@@ -279,10 +279,10 @@ Porque o banco usa `NULL` para “sem placar”; `int` não representa `NULL`.
 Porque não é usada em combo; a `JTable` usa os getters.
 
 **85. Onde está o MVC?**
-`controle` = Model; `entidade` = DAO; `visao` = View; o controller está nos eventos da tela.
+`controle` = Model; `entidade` = DAO; `visao` = View; o controller está nos eventos da tela. Esse é o MVC didático do professor, não o MVC clássico de 1990 com um objeto Controller dedicado.
 
 **86. Por que não há classe Controller?**
-Foi uma simplificação: a tela coordena as ações. A crítica é que ela ficou com 2.073 linhas.
+Porque o MVC do professor é o de três camadas (`controle`/`entidade`/`visao`) e o controller está no evento do botão. A crítica é que a tela ficou com 2.073 linhas; não é ausência do padrão ensinado.
 
 **87. O que é um DAO?**
 Data Access Object: classe que isola o SQL e monta os objetos.
@@ -328,7 +328,7 @@ Um `PreparedStatement` para procedures, com a sintaxe `{call nome(?, ?)}`.
 Que o `fecharBanco()` execute mesmo se ocorrer exceção.
 
 **100. O que o `fecharBanco()` fecha?**
-Apenas o `PreparedStatement`; não fecha `ResultSet` nem `Connection`. É uma limitação.
+Apenas o `PreparedStatement`; a `Connection` não é fechada. O `ResultSet` é fechado indiretamente quando o statement é fechado. É uma limitação herdada do exemplo didático do professor.
 
 **101. Por que o driver usa `com.mysql.jdbc.Driver`?**
 É o nome antigo; o Connector/J 8+ recomenda `com.mysql.cj.jdbc.Driver`. Se a classe antiga não existir, a conexão fica nula.
@@ -466,10 +466,10 @@ Na validação da aba 1 e no `chk_campeonato_datas`.
 Não. O Java só exibe; o cálculo é do trigger/procedure no MySQL.
 
 **142. Onde está o Controller?**
-Não há classe separada; os `ActionListener` da `TelaPrincipal` fazem esse papel.
+Não há classe separada; os `ActionListener` da `TelaPrincipal` fazem esse papel. É o MVC didático do professor; no MVC clássico de 1990, o Controller seria um objeto dedicado.
 
 **143. A conexão é fechada?**
-Em geral não: `fecharBanco()` fecha só o `PreparedStatement`. `ManterRelatorio` é a exceção e fecha a `Connection`.
+Em geral não: `fecharBanco()` fecha só o `PreparedStatement`; a `Connection` fica aberta até o GC/`wait_timeout`. O `ResultSet` é fechado indiretamente pelo statement. `ManterRelatorio` é a exceção e fecha a `Connection`.
 
 **144. Por que `com.mysql.jdbc.Driver` e não `com.mysql.cj.jdbc.Driver`?**
 É o nome antigo; o Connector/J 8+ recomenda o novo. Se a classe antiga não existir, o `Class.forName` falha e a conexão fica nula.
