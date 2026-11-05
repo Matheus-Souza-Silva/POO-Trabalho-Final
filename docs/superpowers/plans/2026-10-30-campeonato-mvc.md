@@ -1,5 +1,7 @@
 # Sistema Campeonato (Java + MVC + MySQL) — Roteiro Geral
 
+> **Documento histórico de planejamento (out/2026).** A implementação final está descrita nos guias [`00`](../../guia/00-guia-de-apresentacao.md)–[`04`](../../guia/04-perguntas-e-respostas.md). Alguns nomes deste plano (`ConexaoBD`, `*Controller`, arquivos `02-java-mvc-e-conexao.md`, `03-cruds-simples.md` etc.) **não existem** no código final; use os guias atuais como referência.
+
 **Spec:** enunciado do trabalho (`POO Trabalho em Grupo 3f83d05adda5803f9eb5f7d682b56de3.md`, entrega 06/11/2026).
 **Plano detalhado da Fase 1:** [`2026-10-30-fase1-banco-de-dados.md`](2026-10-30-fase1-banco-de-dados.md)
 

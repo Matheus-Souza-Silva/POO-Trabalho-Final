@@ -109,7 +109,7 @@ A resposta faz o caminho inverso: o banco devolve as linhas (ou um erro), o DAO 
 | **DAO / Entidade** | `br.com.entidade` | conexão (`DAO`) e SQL de cada entidade (`ManterCampeonato`, `ManterEquipe`, `ManterJogador`, `ManterEstadio`, `ManterArbitro`, `ManterClassificacao`, `ManterPartida`, `ManterRelatorio`) com `PreparedStatement` |
 | **View** | `br.com.visao` | tela Swing principal; exibe dados, valida campos e repassa ações |
 
-> As telas `Cadastro`, `Alterar`, `Deletar` e `Listar` são formulários antigos do NetBeans, mantidos apenas como rascunho e **não são usados** pelo sistema. A tela usada é a **`TelaPrincipal`**, construída diretamente em código Java (o `.form` dela foi removido para o NetBeans abrir o arquivo como fonte, sem tentar carregar um editor visual incompatível).
+> A tela usada é a **`TelaPrincipal`**, construída diretamente em código Java. O arquivo `TelaPrincipal.form` existe, mas é apenas um **stub mínimo** do NetBeans (não contém os componentes); a interface real está em `configurarJanelaCompleta()` e nos métodos `criarPainel...`.
 
 ### Pesquisa individual
 
@@ -272,8 +272,8 @@ flowchart TD
 | [`Champs_procedures_triggers.sql`](SQL_Champs/Champs_procedures_triggers.sql) | validação das partidas, inscrição e classificação automática |
 | [`Champs_relatorios.sql`](SQL_Champs/Champs_relatorios.sql) | procedures dos relatórios: classificação e partidas por período |
 | [`Champs_dados.sql`](SQL_Champs/Champs_dados.sql) | **dados de demonstração**: 4 campeonatos, 10 equipes, 5 estádios, 5 árbitros, 21 jogadores e 28 partidas com situações variadas |
-| [`99_testes.sql`](SQL_Champs/99_testes.sql) | roteiro de testes (dados de teste + verificações `OK`/`FALHOU`) |
-| [`testar.sh`](SQL_Champs/testar.sh) | executa tudo num MySQL descartável via Docker |
+| `99_testes.sql` | roteiro de testes **antigo**, substituído por `Champs_dados.sql`; só existe no histórico do Git |
+| [`testar.sh`](SQL_Champs/testar.sh) | sobe MySQL no Docker, carrega `Champs_dados.sql` e confere contagens, classificação, relatórios e regras |
 
 ### Dados de demonstração
 
@@ -285,7 +285,7 @@ O arquivo [`Champs_dados.sql`](SQL_Champs/Champs_dados.sql) serve para deixar o 
 - **28 partidas**, incluindo jogos encerrados, agendados, cancelados e um `EM_ANDAMENTO` com tempo de jogo;
 - inscrições em três campeonatos diferentes.
 
-> ⚠️ Use `Champs_dados.sql` **ou** `99_testes.sql`, não os dois no mesmo banco. O `99_testes` conta com IDs fixos e um banco recém-criado; o arquivo de demonstração é para encher as telas.
+> ⚠️ O `99_testes.sql` foi substituído por `Champs_dados.sql`; não rode os dois no mesmo banco. O `Champs_dados` conta com IDs fixos e um banco recém-criado e é o arquivo usado pelo `testar.sh`.
 
 ### Relatório principal
 
@@ -351,7 +351,7 @@ Para deixar as tabelas cheias antes da apresentação, execute:
 SQL_Champs/Champs_dados.sql
 ```
 
-Isso cria 4 campeonatos, 10 equipes, 5 estádios, 5 árbitros, 21 jogadores e 28 partidas. **Não execute o `99_testes.sql` depois desse arquivo** sem recriar o banco, porque os IDs de teste deixam de bater.
+Isso cria 4 campeonatos, 10 equipes, 5 estádios, 5 árbitros, 21 jogadores e 28 partidas. **Não execute o `99_testes.sql` antigo depois desse arquivo** sem recriar o banco, porque os IDs de teste deixam de bater.
 
 ### 3. Testar o banco *(opcional)*
 
@@ -361,7 +361,7 @@ Com Docker:
 bash SQL_Champs/testar.sh
 ```
 
-Sem Docker, execute os três scripts e depois o `99_testes.sql` no Workbench, num banco recém-criado. Todos os testes devem mostrar `OK`, e só os comandos marcados com `ESPERADO ERRO` podem falhar.
+O `testar.sh` já usa `Champs_dados.sql`: ele sobe o MySQL no Docker, instala o banco, carrega os dados e confere contagens, classificação, relatórios e regras. Sem Docker, execute os três scripts e o `Champs_dados.sql` no Workbench, num banco recém-criado, e confira as chamadas `CALL sp_relatorio_...`.
 
 ### 4. Executar a aplicação
 
@@ -387,8 +387,7 @@ POO-Trabalho-Final/
 │   ├── Champs_schema.sql               # estrutura: tabelas, chaves, regras
 │   ├── Champs_procedures_triggers.sql  # validações e classificação automática
 │   ├── Champs_relatorios.sql           # procedures dos relatórios
-│   ├── Champs_dados.sql                # dados variados para demonstração
-│   ├── 99_testes.sql                   # roteiro de testes
+│   ├── Champs_dados.sql                # dados variados para demonstração/teste
 │   └── testar.sh                       # testes automáticos (Docker)
 ├── 📂 Java_Champs/                     # aplicação Java (NetBeans)
 │   ├── src/br/com/
@@ -417,9 +416,11 @@ POO-Trabalho-Final/
 
 | Documento | Conteúdo |
 |---|---|
-| [Guia de apresentação](docs/guia/00-guia-de-apresentacao.md) | visão geral, requisitos, MVC, roteiro da demonstração e banco de perguntas |
-| [Guia do banco de dados](docs/guia/01-banco-de-dados.md) | tabelas, chaves, triggers, procedures, JOIN e perguntas com respostas |
-| [Guia do Java e dos relatórios](docs/guia/02-java-e-relatorios.md) | pacotes, DAOs, pesquisas individuais, validações dos botões, procedures e impressão |
+| [Guia de apresentação](docs/guia/00-guia-de-apresentacao.md) | visão geral, requisitos, MVC, fluxos de ponta a ponta, roteiro da demonstração e limitações |
+| [Guia do banco de dados](docs/guia/01-banco-de-dados.md) | cada tabela, constraint, trigger, procedure e JOIN, linha a linha |
+| [Guia do Java e dos relatórios](docs/guia/02-java-e-relatorios.md) | classes, métodos, JDBC, Swing, validações, DAOs e impressão |
+| [Mapa do código](docs/guia/03-mapa-do-codigo.md) | índice por arquivo, faixa de linhas, método e assunto |
+| [Simulado de perguntas](docs/guia/04-perguntas-e-respostas.md) | perguntas prováveis, pegadinhas e respostas curtas |
 
 ---
 

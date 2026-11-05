@@ -1,5 +1,7 @@
 # Fase 1 — Banco de Dados `campeonato` — Plano de Implementação
 
+> **Documento histórico de planejamento (out/2026).** A implementação final está descrita nos guias [`00`](../../guia/00-guia-de-apresentacao.md)–[`04`](../../guia/04-perguntas-e-respostas.md). O `99_testes.sql` citado aqui foi **substituído** por `Champs_dados.sql`; veja o estado atual no [guia do banco](../../guia/01-banco-de-dados.md#9-testarsh-e-o-champs_dadossql).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Banco `campeonato` criável sem erros, com as regras da partida protegidas, o relatório principal com JOIN pronto para o Java e um guia de estudo que permita a qualquer integrante explicar tudo.
