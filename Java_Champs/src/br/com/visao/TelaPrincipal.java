@@ -99,6 +99,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
      * desabilitados enquanto faltar dado obrigatorio.
      */
     private void vincularValidacao(Runnable validador, JTextField... campos) {
+        // DocumentListener tem tres eventos: inserir, remover e alterar.
+        // Os tres chamam o mesmo validador, que liga/desliga os botoes.
         DocumentListener dl = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -138,6 +140,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
 
     private DefaultTableModel modelo(String... colunas) {
+        // isCellEditable = false: a JTable e somente leitura; a alteracao
+        // acontece pelo formulario e pelo botao Alterar.
         return new DefaultTableModel(colunas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -148,6 +152,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void configurarTabela(JTable tabela) {
         tabela.setRowHeight(24);
+        // Sem ordenacao automatica: em Partida/Jogador, a linha selecionada
+        // e usada como indice do cache; um sorter mudaria esse indice.
         tabela.setAutoCreateRowSorter(false);
         tabela.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     }
@@ -161,6 +167,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
             return false;
         }
         try {
+            // valueOf aceita exatamente YYYY-MM-DD; se o texto estiver em
+            // outro formato, lanca IllegalArgumentException.
             java.sql.Date.valueOf(valor.trim());
             return true;
         } catch (IllegalArgumentException ex) {
@@ -176,6 +184,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         if (partes.length != 2 || !dataValida(partes[0])) {
             return false;
         }
+        // Hora no formato HH:MM ou HH:MM:SS (24h).
         return partes[1].matches("([01]\\d|2[0-3]):[0-5]\\d(:[0-5]\\d)?");
     }
 
@@ -224,6 +233,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         getContentPane().removeAll();
         getContentPane().setLayout(new BorderLayout());
 
+        // A tela e montada em codigo (nao usa o editor visual do NetBeans).
+        // Cada aba devolve um JPanel pronto; a TelaPrincipal so os organiza.
         JTabbedPane abas = new JTabbedPane();
         abas.addTab("1. Campeonatos", criarPainelCampeonato());
         abas.addTab("2. Equipes", criarPainelEquipe());
@@ -280,6 +291,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         botoes.add(btnDeletar);
         botoes.add(btnLimpar);
 
+        // O mesmo validador roda a cada tecla. Cadastrar exige nome e datas
+        // coerentes; Alterar/Excluir exigem tambem um ID carregado.
         Runnable validar = () -> {
             boolean camposOk = !vazio(txtNomeCamp.getText())
                     && dataValida(txtInicioCamp.getText())
@@ -300,6 +313,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         tblCampeonato = new JTable(modelo("ID", "Nome", "Início", "Fim", "Status"));
         configurarTabela(tblCampeonato);
+        // Selecionar a linha copia os dados para o formulario. O ID preenchido
+        // e o que habilita os botoes Alterar e Excluir.
         tblCampeonato.getSelectionModel().addListSelectionListener(e -> {
             if (e.getValueIsAdjusting()) {
                 return;
@@ -410,6 +425,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
             return;
         }
         try {
+            // O DAO devolve o objeto completo (ou null). Nao e a JTable que
+            // pesquisa: assim o mesmo metodo serve para ID ou nome.
             Campeonato c = daoCampeonato.pesquisarRegistro(termo);
             if (c != null) {
                 preencherCamposCampeonato(c);
@@ -435,6 +452,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
     // ABA 2: EQUIPE (CRUD SIMPLES)
     // =========================================================================
     private JPanel criarPainelEquipe() {
+        // Mesmo esqueleto do Campeonato: formulario, botoes, tabela e
+        // validacao. O que muda sao os campos e a query do ManterEquipe.
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -639,6 +658,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         botoes.add(btnDeletar);
         botoes.add(btnLimpar);
 
+        // A camisa e validada no Java (1..99) e tambem no banco pelo CHECK.
+        // A data e opcional; quando vazia, o DAO grava NULL.
         Runnable validar = () -> {
             Integer camisa = inteiroOuNulo(txtCamisaJogador.getText());
             boolean camisaOk = camisa != null && camisa >= 1 && camisa <= 99;
@@ -772,6 +793,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
 
     private Jogador montarObjetoJogador() {
+        // A FK vem do objeto Equipe selecionado no combo, nao do texto.
+        // Data vazia vira null para o banco aceitar o campo opcional.
         Jogador j = new Jogador();
         j.setNome(txtNomeJogador.getText().trim());
         j.setPosicao(cbPosicaoJogador.getSelectedItem().toString());
@@ -834,6 +857,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         botoes.add(btnDeletar);
         botoes.add(btnLimpar);
 
+        // Capacidade nao basta estar preenchida: precisa ser inteiro > 0.
         Runnable validar = () -> {
             boolean camposOk = !vazio(txtNomeEstadio.getText())
                     && !vazio(txtCidadeEstadio.getText())
@@ -1058,6 +1082,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
 
         btnConsultar.addActionListener(e -> {
+            // O DAO procura em tres colunas: id, nome e registro.
             String termo = txtBuscaArbitro.getText().trim();
             if (termo.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
@@ -1147,17 +1172,33 @@ public class TelaPrincipal extends javax.swing.JFrame {
         JPanel painel = new JPanel(new BorderLayout(10, 10));
         painel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JPanel form = new JPanel(new GridLayout(2, 3, 8, 8));
+        // Duas linhas de campos. Na primeira, dois grupos "rótulo + combo"
+        // dividem a largura; o rótulo fica sempre colado ao seu combo.
         cbCampClass = new JComboBox<>();
         cbEquipeInsc = new JComboBox<>();
         cbStatusClass = new JComboBox<>(new String[]{"A_JOGAR", "CLASSIFICADO", "ELIMINADO"});
 
-        form.add(new JLabel("Campeonato:"));
-        form.add(cbCampClass);
-        form.add(new JLabel("Equipe para Inscrição:"));
-        form.add(cbEquipeInsc);
-        form.add(new JLabel("Status na Competição:"));
-        form.add(cbStatusClass);
+        JPanel linhaCampos = new JPanel(new GridLayout(1, 2, 12, 0));
+
+        JPanel grupoCamp = new JPanel(new BorderLayout(6, 0));
+        grupoCamp.add(new JLabel("Campeonato:"), BorderLayout.WEST);
+        grupoCamp.add(cbCampClass, BorderLayout.CENTER);
+
+        JPanel grupoEquipe = new JPanel(new BorderLayout(6, 0));
+        grupoEquipe.add(new JLabel("Equipe para Inscrição:"), BorderLayout.WEST);
+        grupoEquipe.add(cbEquipeInsc, BorderLayout.CENTER);
+
+        linhaCampos.add(grupoCamp);
+        linhaCampos.add(grupoEquipe);
+
+        JPanel linhaStatus = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        linhaStatus.add(new JLabel("Status na Competição:"));
+        cbStatusClass.setPreferredSize(new Dimension(190, cbStatusClass.getPreferredSize().height));
+        linhaStatus.add(cbStatusClass);
+
+        JPanel form = new JPanel(new BorderLayout(0, 8));
+        form.add(linhaCampos, BorderLayout.NORTH);
+        form.add(linhaStatus, BorderLayout.SOUTH);
 
         btnInscrever = new JButton("Inscrever Equipe no Campeonato");
         btnStatusClass = new JButton("Atualizar Status da Equipe Selecionada");
@@ -1176,11 +1217,23 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 "Posição", "ID Equipe", "Equipe", "PTS", "J", "V", "E", "D",
                 "GP", "GC", "SG", "Status"));
         configurarTabela(tblClassificacao);
+        tblClassificacao.setFillsViewportHeight(true);
 
+        // Larguras para a tabela não ficar com colunas gigantes vazias.
+        int[] largurasClassificacao = {65, 75, 240, 55, 45, 45, 45, 45, 45, 45, 45, 110};
+        for (int i = 0; i < largurasClassificacao.length; i++) {
+            tblClassificacao.getColumnModel().getColumn(i)
+                    .setPreferredWidth(largurasClassificacao[i]);
+        }
+
+        // Trocar o campeonato recarrega a tabela. A classificacao vem do
+        // SELECT com INNER JOIN de ManterClassificacao (nao e calculada aqui).
         cbCampClass.addActionListener(e -> carregarTabelaClassificacao());
         aoMudarCombo(this::atualizarBotoesClassificacao, cbCampClass, cbEquipeInsc);
         aoSelecionarTabela(this::atualizarBotoesClassificacao, tblClassificacao);
 
+        // Inscrever chama a procedure sp_inscrever_equipe; o INSERT IGNORE
+        // do banco evita duplicar a mesma equipe no campeonato.
         btnInscrever.addActionListener(e -> {
             Campeonato c = (Campeonato) cbCampClass.getSelectedItem();
             Equipe eq = (Equipe) cbEquipeInsc.getSelectedItem();
@@ -1198,6 +1251,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        // O status_atual e manual (A_JOGAR/CLASSIFICADO/ELIMINADO); a
+        // pontuacao e a colocacao continuam sendo calculadas pelo banco.
         btnStatusClass.addActionListener(e -> {
             int row = tblClassificacao.getSelectedRow();
             Campeonato c = (Campeonato) cbCampClass.getSelectedItem();
@@ -1217,6 +1272,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        // O DELETE e bloqueado pelo trigger se a equipe ja tiver partidas
+        // no campeonato (preserva o historico).
         btnDesinscrever.addActionListener(e -> {
             int row = tblClassificacao.getSelectedRow();
             Campeonato c = (Campeonato) cbCampClass.getSelectedItem();
@@ -1251,6 +1308,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         if (btnInscrever == null) {
             return;
         }
+        // Inscrever depende dos dois combos; atualizar/remover dependem de
+        // uma linha selecionada na tabela.
         boolean temCampeonato = cbCampClass.getSelectedItem() != null;
         boolean temEquipe = cbEquipeInsc.getSelectedItem() != null;
         boolean temLinha = tblClassificacao.getSelectedRow() >= 0;
@@ -1321,6 +1380,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         form.add(new JLabel(""));
         form.add(new JLabel(""));
 
+        // O status manda no placar: jogo agendado/cancelado nao tem gols;
+        // jogo encerrado precisa de placar. O tempo so existe em andamento.
         cbStatusPartida.addActionListener(e -> {
             String status = cbStatusPartida.getSelectedItem().toString();
             boolean emAndamento = status.equals("EM_ANDAMENTO");
@@ -1354,12 +1415,16 @@ public class TelaPrincipal extends javax.swing.JFrame {
         botoes.add(btnExcluir);
         botoes.add(btnLimpar);
 
+        // Validacao mais completa do sistema: combos obrigatorios, rodada,
+        // data/hora, acrescimo, placar e regra de mandante != visitante.
         Runnable validar = () -> {
             boolean combosOk = cbCampPartida.getSelectedItem() != null
                     && cbMandante.getSelectedItem() != null
                     && cbVisitante.getSelectedItem() != null
                     && cbEstadioPartida.getSelectedItem() != null
                     && cbArbitroPartida.getSelectedItem() != null;
+            // Ou os dois gols estao vazios, ou os dois sao numeros >= 0.
+            // Se ENCERRADA, os dois precisam estar preenchidos.
             boolean golsOk = (vazio(txtGolsMand.getText()) && vazio(txtGolsVis.getText()))
                     || (inteiroNaoNegativo(txtGolsMand.getText())
                     && inteiroNaoNegativo(txtGolsVis.getText()));
@@ -1367,6 +1432,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 golsOk = inteiroNaoNegativo(txtGolsMand.getText())
                         && inteiroNaoNegativo(txtGolsVis.getText());
             }
+            // O banco tambem tem CHECK, mas a tela evita habilitar o botao.
             boolean timesDiferentes = true;
             Equipe mandante = (Equipe) cbMandante.getSelectedItem();
             Equipe visitante = (Equipe) cbVisitante.getSelectedItem();
@@ -1409,6 +1475,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        // INSERT em PARTIDA: o trigger AFTER chama a sincronizacao da
+        // classificacao, por isso a tela recarrega tudo depois.
         btnAgendar.addActionListener(e -> {
             if (!btnAgendar.isEnabled()) {
                 JOptionPane.showMessageDialog(this,
@@ -1427,6 +1495,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
 
         btnConsultar.addActionListener(e -> {
+            // A busca aceita ID ou nomes; o DAO decide qual coluna usar.
             String termo = txtBuscaPartida.getText().trim();
             if (termo.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
@@ -1446,6 +1515,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        // UPDATE em PARTIDA: o trigger BEFORE valida e o AFTER recalcula.
         btnAtualizar.addActionListener(e -> {
             if (!btnAtualizar.isEnabled()) {
                 JOptionPane.showMessageDialog(this,
@@ -1464,6 +1534,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        // DELETE em PARTIDA: o trigger AFTER tambem recalcula a classificacao.
         btnExcluir.addActionListener(e -> {
             if (txtIdPartida.getText().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Consulte ou selecione uma partida para excluir!");
@@ -1508,6 +1579,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         txtGolsVis.setText(p.getGolsVisitante() == null ? "" : String.valueOf(p.getGolsVisitante()));
         txtAcrescimo.setText(String.valueOf(p.getAcrescimo()));
 
+        // Os combos guardam objetos (Equipe, Estadio...), nao apenas o ID;
+        // por isso procuramos o item cujo getId coincide com o da partida.
         selecionarComboCampeonato(cbCampPartida, p.getIdCampeonato());
         selecionarComboEquipe(cbMandante, p.getIdMandante());
         selecionarComboEquipe(cbVisitante, p.getIdVisitante());
@@ -1516,6 +1589,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
 
     private Partida montarObjetoPartida() {
+        // Converte a tela para o objeto que o DAO espera. Gols vazios viram
+        // null: o banco usa NULL para jogo sem placar (AGENDADA/CANCELADA).
         Partida p = new Partida();
         p.setIdCampeonato(((Campeonato) cbCampPartida.getSelectedItem()).getIdCampeonato());
         p.setRodada(Integer.parseInt(txtRodadaPartida.getText().trim()));
@@ -1662,6 +1737,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
 
     private void gerarRelatorioClassificacao() {
+        // Este e o relatorio principal: a procedure ja devolve a classificacao
+        // pronta (com JOINs); aqui so montamos a JTable e o resumo.
         Campeonato c = (Campeonato) cbCampRelatorio.getSelectedItem();
         if (c == null) {
             JOptionPane.showMessageDialog(this, "Cadastre e selecione um campeonato.");
@@ -1722,6 +1799,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
 
     private void gerarRelatorioPartidas() {
+        // O outro relatorio usa a procedure por periodo; os contadores abaixo
+        // so alimentam o texto de resumo no rodape.
         Campeonato c = (Campeonato) cbCampRelatorio.getSelectedItem();
         if (c == null || !dataValida(txtInicioRel.getText()) || !dataValida(txtFimRel.getText())) {
             JOptionPane.showMessageDialog(this, "Selecione um campeonato e datas válidas.");
@@ -1775,8 +1854,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
     // =========================================================================
     private void recarregarTudo() {
         try {
+            // Guarda a selecao do relatorio antes de recriar os combos.
             Campeonato campSelecionado = (Campeonato) cbCampRelatorio.getSelectedItem();
 
+            // Recria a tabela e os combos de campeonato a partir do banco.
+            // As consultas de cadastro usam ORDER BY id, entao a ordem e
+            // previsivel.
             ArrayList<Campeonato> camps = daoCampeonato.pesquisarTudo();
             DefaultTableModel mCamp = (DefaultTableModel) tblCampeonato.getModel();
             mCamp.setRowCount(0);
@@ -1811,6 +1894,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 cbEquipeJogador.addItem(eq);
             }
 
+            // Jogador tem FK para Equipe; por isso carregamos as equipes
+            // primeiro e so depois os jogadores.
             cacheJogadores = daoJogador.pesquisarTudo();
             DefaultTableModel mJog = (DefaultTableModel) tblJogador.getModel();
             mJog.setRowCount(0);
@@ -1846,6 +1931,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
             carregarTabelaClassificacao();
 
+            // O cache guarda os objetos na MESMA ordem das linhas da JTable.
+            // A selecao de uma linha usa esse cache para preencher os campos.
             cachePartidas = daoPartida.pesquisarTudo();
             DefaultTableModel mPart = (DefaultTableModel) tblPartida.getModel();
             mPart.setRowCount(0);
@@ -1870,6 +1957,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
             DefaultTableModel mCl = (DefaultTableModel) tblClassificacao.getModel();
             mCl.setRowCount(0);
             if (c != null) {
+                // A consulta ja vem ordenada por colocacao/pontos; quem ainda
+                // nao jogou tem colocacao NULL e aparece como "-".
                 ArrayList<Classificacao> lista = daoClassificacao.listarPorCampeonato(c.getIdCampeonato());
                 for (Classificacao cl : lista) {
                     mCl.addRow(new Object[]{
@@ -1887,6 +1976,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         }
     }
 
+    // Os combos guardam objetos; procuramos pelo ID dentro deles em vez de
+    // usar setSelectedItem(new Objeto(...)), que nao encontraria o item.
     private void selecionarComboCampeonato(JComboBox<Campeonato> cb, int id) {
         for (int i = 0; i < cb.getItemCount(); i++) {
             if (cb.getItemAt(i).getIdCampeonato() == id) {
@@ -1924,6 +2015,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
 
     private void mostrarErro(Exception ex) {
+        // O SIGNAL/erro do MySQL chega como SQLException; em alguns casos a
+        // mensagem real fica na causa, por isso testamos getCause().
         String msg = ex.getMessage();
         if (ex.getCause() != null && ex.getCause().getMessage() != null) {
             msg = ex.getCause().getMessage();

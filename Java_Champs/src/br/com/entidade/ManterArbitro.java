@@ -65,6 +65,7 @@ public class ManterArbitro extends DAO {
 
         try {
             abrirBanco();
+            // ID, parte do nome ou registro na federacao.
             String query = "SELECT id_arbitro, nome, registro_federacao, categoria FROM ARBITRO "
                     + "WHERE id_arbitro = ? OR nome LIKE ? OR registro_federacao LIKE ? "
                     + "ORDER BY (id_arbitro = ?) DESC, nome "

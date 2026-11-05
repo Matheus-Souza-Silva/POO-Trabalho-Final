@@ -62,6 +62,8 @@ public class ManterEquipe extends DAO {
 
         try {
             abrirBanco();
+            // ID exato ou parte do nome/cidade. O ORDER BY prioriza o ID
+            // exato quando o usuario digita um numero.
             String query = "SELECT id_equipe, nome, cidade FROM EQUIPE "
                     + "WHERE id_equipe = ? OR nome LIKE ? OR cidade LIKE ? "
                     + "ORDER BY (id_equipe = ?) DESC, nome "

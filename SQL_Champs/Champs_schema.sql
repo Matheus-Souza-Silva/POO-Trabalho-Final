@@ -64,7 +64,8 @@ CREATE TABLE JOGADOR (
     CONSTRAINT fk_jogador_equipe
         FOREIGN KEY (id_equipe) REFERENCES EQUIPE (id_equipe)
         ON DELETE RESTRICT ON UPDATE CASCADE,
-
+    -- A mesma camisa nao pode repetir DENTRO da mesma equipe.
+    -- O UNIQUE e composto: (id_equipe, numero_camisa), nao apenas a camisa.
     CONSTRAINT uq_jogador_camisa UNIQUE (id_equipe, numero_camisa),
     CONSTRAINT chk_jogador_camisa CHECK (numero_camisa BETWEEN 1 AND 99)
 ) ENGINE=InnoDB;
@@ -100,6 +101,8 @@ CREATE TABLE CLASSIFICACAO (
     gols_marcados    INT NOT NULL DEFAULT 0,
     gols_sofridos    INT NOT NULL DEFAULT 0,
 
+    -- Colunas geradas: nao sao enviadas no INSERT/UPDATE. O MySQL
+    -- recalcula sozinho quando gols/vitorias/empates mudam.
     saldo_gols INT GENERATED ALWAYS AS (gols_marcados - gols_sofridos) STORED,
     pontuacao  INT GENERATED ALWAYS AS (vitorias * 3 + empates) STORED,
 

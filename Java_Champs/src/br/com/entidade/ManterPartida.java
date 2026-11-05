@@ -10,6 +10,8 @@ public class ManterPartida extends DAO {
 
     // Consulta base com INNER JOIN: troca os codigos pelos nomes das tabelas
     // relacionadas (campeonato, mandante, visitante, estadio e arbitro).
+    // EQUIPE aparece duas vezes: m = mandante; v = visitante. Sem apelidos,
+    // o MySQL nao saberia de qual "nome" o SELECT esta falando.
     private static final String SELECT_PARTIDA
             = "SELECT p.*, c.nome AS nome_camp, m.nome AS nome_mand, "
             + "v.nome AS nome_vis, es.nome AS nome_est, a.nome AS nome_arb "
@@ -59,6 +61,8 @@ public class ManterPartida extends DAO {
         pst.setInt(6, p.getIdArbitro());
         pst.setString(7, p.getDataPartida());
 
+        // O banco tem um CHECK que exige os dois gols NULL ou os dois
+        // preenchidos; por isso gravamos NULL quando nao ha placar.
         if (p.getGolsMandante() == null) {
             pst.setNull(8, Types.INTEGER);
         } else {
@@ -103,6 +107,8 @@ public class ManterPartida extends DAO {
         }
 
         String busca = termo.trim();
+        // Se o texto for numero, tambem comparamos com o ID. Se nao for,
+        // usamos -1 para a comparacao numerica nunca dar match.
         Integer codigo = null;
         try {
             codigo = Integer.valueOf(busca);
@@ -113,6 +119,8 @@ public class ManterPartida extends DAO {
         Partida p = null;
         try {
             abrirBanco();
+            // OR nas colunas de nome/estadio/arbitro; o ORDER BY com o ID
+            // exato garante que "1" traga a partida 1 antes de nomes com 1.
             String query = SELECT_PARTIDA
                     + "WHERE p.id_partida = ? OR m.nome LIKE ? OR v.nome LIKE ? "
                     + "OR c.nome LIKE ? OR es.nome LIKE ? OR a.nome LIKE ? "

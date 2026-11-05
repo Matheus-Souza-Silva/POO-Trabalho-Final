@@ -67,6 +67,7 @@ public class ManterCampeonato extends DAO {
 
         try {
             abrirBanco();
+            // ID exato ou parte do nome do campeonato.
             String query = "SELECT id_campeonato, nome, data_inicio, data_fim, status "
                     + "FROM CAMPEONATO "
                     + "WHERE id_campeonato = ? OR nome LIKE ? "

@@ -40,6 +40,8 @@ BEGIN
     -- que nenhuma equipe nao inscrita entra em campo).
 
     -- 1) Zera os acumuladores do campeonato (quem nao jogou fica com 0)
+    --    Estrategia "recalcular do zero": nao ha risco de sobrar soma antiga
+    --    quando uma partida e alterada ou excluida.
     UPDATE CLASSIFICACAO
        SET partidas_jogadas = 0,
            vitorias         = 0,
@@ -51,6 +53,10 @@ BEGIN
      WHERE id_campeonato = p_id_campeonato;
 
     -- 2) Soma as partidas ENCERRADAS, uma linha por equipe (casa + fora)
+    --    Cada partida aparece DUAS vezes: uma como mandante e outra como
+    --    visitante. O UNION ALL junta as duas visoes; o GROUP BY soma por
+    --    equipe. Comparacoes como (gols > gols) valem 1/0, por isso SUM(v)
+    --    conta vitorias sem precisar de CASE.
     UPDATE CLASSIFICACAO c
       JOIN (
             SELECT id_equipe,
@@ -95,6 +101,8 @@ BEGIN
 
     -- 3) Colocacao (1o, 2o, ...) com criterios de desempate.
     --    ROW_NUMBER() = funcao de janela (MySQL 8+). Quem nao jogou fica NULL.
+    --    A ordem e: pontos, vitorias, saldo, gols marcados e, por fim, o id
+    --    da equipe (para nao haver empate absoluto).
     UPDATE CLASSIFICACAO c
       JOIN (
             SELECT id_equipe,
@@ -148,7 +156,9 @@ CREATE PROCEDURE sp_validar_partida(
     IN p_status        VARCHAR(20)
 )
 BEGIN
-    -- Partida cancelada nao ocupa equipe, arbitro nem estadio: nao valida
+    -- Partida cancelada nao ocupa equipe, arbitro nem estadio: nao valida.
+    -- p_id_partida e usado nas regras 3 e 4 para a partida nao conflitar
+    -- com ela mesma quando esta sendo alterada (no INSERT ele vem 0).
     IF p_status <> 'CANCELADA' THEN
 
         -- Regra 1: a data precisa estar dentro do periodo do campeonato
@@ -222,6 +232,8 @@ END$$
 -- ---------------------------------------------------------------------
 -- TRIGGERS AFTER: qualquer mudanca em PARTIDA mantem a classificacao coerente,
 -- mesmo que a alteracao seja feita direto no Workbench (sem passar pelo Java).
+-- O AFTER roda DEPOIS da gravacao, por isso a procedure ja consegue ler
+-- a partida nova/alterada na tabela.
 -- ---------------------------------------------------------------------
 DROP TRIGGER IF EXISTS trg_partida_after_insert$$
 
@@ -240,6 +252,8 @@ FOR EACH ROW
 BEGIN
     CALL sp_sincronizar_classificacao(OLD.id_campeonato);
 
+    -- Se a partida mudou de campeonato, o campeonato antigo e o novo
+    -- precisam ser recalculados.
     IF NEW.id_campeonato <> OLD.id_campeonato THEN
         CALL sp_sincronizar_classificacao(NEW.id_campeonato);
     END IF;

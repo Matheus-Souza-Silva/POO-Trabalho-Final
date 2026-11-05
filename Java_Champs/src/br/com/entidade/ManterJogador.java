@@ -14,6 +14,8 @@ import java.util.ArrayList;
  */
 public class ManterJogador extends DAO {
 
+    // JOIN para trazer o nome da equipe junto com o jogador. Assim a JTable
+    // mostra "Tigres FC" em vez do id_equipe.
     private static final String SELECT_JOGADOR
             = "SELECT j.id_jogador, j.nome, j.posicao, j.numero_camisa, "
             + "j.data_nascimento, j.id_equipe, e.nome AS nome_equipe "
@@ -53,6 +55,7 @@ public class ManterJogador extends DAO {
         pst.setInt(3, j.getNumeroCamisa());
 
         if (j.getDataNascimento() == null || j.getDataNascimento().trim().isEmpty()) {
+            // Campo opcional: NULL e diferente de string vazia no DATE.
             pst.setNull(4, Types.DATE);
         } else {
             pst.setDate(4, java.sql.Date.valueOf(j.getDataNascimento().trim()));
@@ -83,6 +86,8 @@ public class ManterJogador extends DAO {
         }
 
         String busca = termo.trim();
+        // Numero pode ser ID ou camisa; CAST permite comparar a camisa como
+        // texto sem quebrar quando o usuario digita uma posicao/equipe.
         Integer codigo = null;
         try {
             codigo = Integer.valueOf(busca);

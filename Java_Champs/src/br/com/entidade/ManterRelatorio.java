@@ -27,6 +27,7 @@ public class ManterRelatorio extends DAO {
 
         try {
             abrirBanco();
+            // {call procedure(?)} e a sintaxe JDBC para chamar procedure.
             cs = con.prepareCall("{call sp_relatorio_classificacao(?)}");
             cs.setInt(1, idCampeonato);
             rs = cs.executeQuery();
@@ -35,6 +36,8 @@ public class ManterRelatorio extends DAO {
                 RelatorioClassificacao linha = new RelatorioClassificacao();
                 linha.setNomeCampeonato(rs.getString("campeonato"));
 
+                // wasNull() e necessario: getInt devolve 0 tanto para zero
+                // quanto para NULL; queremos distinguir "sem colocacao".
                 int posicao = rs.getInt("posicao");
                 linha.setPosicao(rs.wasNull() ? null : posicao);
 
@@ -74,6 +77,7 @@ public class ManterRelatorio extends DAO {
             abrirBanco();
             cs = con.prepareCall("{call sp_relatorio_partidas_periodo(?, ?, ?)}");
             cs.setInt(1, idCampeonato);
+            // valueOf exige o texto no formato YYYY-MM-DD validado na tela.
             cs.setDate(2, java.sql.Date.valueOf(dataInicio));
             cs.setDate(3, java.sql.Date.valueOf(dataFim));
             rs = cs.executeQuery();
@@ -102,6 +106,8 @@ public class ManterRelatorio extends DAO {
      * procedure para nao deixar conexoes abertas.
      */
     private void fecharRecursos(CallableStatement cs) {
+        // O DAO fecha o PreparedStatement; a procedure usa um
+        // CallableStatement local e a conexao precisa ser fechada aqui.
         if (cs != null) {
             try {
                 cs.close();

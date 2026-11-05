@@ -64,6 +64,7 @@ public class ManterEstadio extends DAO {
 
         try {
             abrirBanco();
+            // ID exato ou parte do nome/cidade do estadio.
             String query = "SELECT id_estadio, nome, cidade, capacidade FROM ESTADIO "
                     + "WHERE id_estadio = ? OR nome LIKE ? OR cidade LIKE ? "
                     + "ORDER BY (id_estadio = ?) DESC, nome "

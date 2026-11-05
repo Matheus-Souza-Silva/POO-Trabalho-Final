@@ -28,6 +28,8 @@ DELIMITER $$
 -- ---------------------------------------------------------------------
 CREATE PROCEDURE sp_relatorio_classificacao(IN p_id_campeonato INT)
 BEGIN
+    -- A base e CLASSIFICACAO (inscricao + numeros). CAMPEONATO e EQUIPE
+    -- entram por INNER JOIN; as subconsultas buscam dados das PARTIDAS.
     SELECT c.nome AS campeonato,
            cl.colocacao_equipe AS posicao,
            e.nome AS equipe,
@@ -72,6 +74,8 @@ BEGIN
      INNER JOIN EQUIPE e ON e.id_equipe = cl.id_equipe
      INNER JOIN CAMPEONATO c ON c.id_campeonato = cl.id_campeonato
      WHERE cl.id_campeonato = p_id_campeonato
+     -- (colocacao IS NULL) = 0 para quem jogou e 1 para quem nao jogou;
+     -- por isso quem tem posicao aparece primeiro.
      ORDER BY (cl.colocacao_equipe IS NULL), cl.colocacao_equipe,
               cl.pontuacao DESC, cl.saldo_gols DESC, e.nome;
 END$$

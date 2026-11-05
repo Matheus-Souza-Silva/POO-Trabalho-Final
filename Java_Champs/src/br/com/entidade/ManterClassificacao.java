@@ -51,6 +51,8 @@ public class ManterClassificacao extends DAO {
     }
 
     public Classificacao pesquisarRegistro(int idCampeonato, int idEquipe) throws Exception {
+        // Chave composta: a mesma equipe pode estar em varios campeonatos,
+        // entao a busca precisa dos dois IDs.
         Classificacao cl = null;
         try {
             abrirBanco();
@@ -84,6 +86,8 @@ public class ManterClassificacao extends DAO {
                     + "FROM CLASSIFICACAO c "
                     + "INNER JOIN EQUIPE e ON e.id_equipe = c.id_equipe "
                     + "WHERE c.id_campeonato = ? "
+                    // Quem ainda nao jogou tem colocacao NULL; o primeiro
+                    // criterio joga esses registros para o fim da tabela.
                     + "ORDER BY (c.colocacao_equipe IS NULL), c.colocacao_equipe ASC, e.nome ASC";
             pst = (PreparedStatement) con.prepareStatement(query);
             pst.setInt(1, idCampeonato);
