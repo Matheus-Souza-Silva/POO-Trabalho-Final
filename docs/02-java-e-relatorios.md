@@ -12,7 +12,7 @@
 
 ### 1.1 O projeto NetBeans
 
-O projeto fica em `Java_Champs/`. A configuração importante está em [`nbproject/project.properties`](../../Java_Champs/nbproject/project.properties):
+O projeto fica em `Java_Champs/`. A configuração importante está em [`nbproject/project.properties`](../Java_Champs/nbproject/project.properties):
 
 | Propriedade | Valor | Significado |
 |---|---|---|
@@ -122,7 +122,7 @@ As classes de `controle` são **classes de dados** (POJOs): atributos privados, 
 
 ### 3.2 `Campeonato`
 
-[`Campeonato.java`](../../Java_Champs/src/br/com/controle/Campeonato.java#L3-L53)
+[`Campeonato.java`](../Java_Champs/src/br/com/controle/Campeonato.java#L3-L53)
 
 ```java
 public class Campeonato {
@@ -147,7 +147,7 @@ public class Campeonato {
 
 ### 3.3 `Equipe`
 
-[`Equipe.java`](../../Java_Champs/src/br/com/controle/Equipe.java#L3-L35)
+[`Equipe.java`](../Java_Champs/src/br/com/controle/Equipe.java#L3-L35)
 
 ```java
 private int idEquipe;
@@ -165,7 +165,7 @@ public String toString() {
 
 ### 3.4 `Estadio`
 
-[`Estadio.java`](../../Java_Champs/src/br/com/controle/Estadio.java#L3-L44)
+[`Estadio.java`](../Java_Champs/src/br/com/controle/Estadio.java#L3-L44)
 
 ```java
 private int idEstadio;
@@ -184,7 +184,7 @@ public String toString() {
 
 ### 3.5 `Arbitro`
 
-[`Arbitro.java`](../../Java_Champs/src/br/com/controle/Arbitro.java#L3-L44)
+[`Arbitro.java`](../Java_Champs/src/br/com/controle/Arbitro.java#L3-L44)
 
 ```java
 private int idArbitro;
@@ -202,7 +202,7 @@ public String toString() {
 
 ### 3.6 `Jogador`
 
-[`Jogador.java`](../../Java_Champs/src/br/com/controle/Jogador.java#L12-L85)
+[`Jogador.java`](../Java_Champs/src/br/com/controle/Jogador.java#L12-L85)
 
 ```java
 private int idJogador;
@@ -228,7 +228,7 @@ public String toString() {
 
 ### 3.7 `Partida`
 
-[`Partida.java`](../../Java_Champs/src/br/com/controle/Partida.java#L3-L167)
+[`Partida.java`](../Java_Champs/src/br/com/controle/Partida.java#L3-L167)
 
 ```java
 private int idPartida;
@@ -260,7 +260,7 @@ private String nomeArbitro;
 
 ### 3.8 `Classificacao`
 
-[`Classificacao.java`](../../Java_Champs/src/br/com/controle/Classificacao.java#L3-L120)
+[`Classificacao.java`](../Java_Champs/src/br/com/controle/Classificacao.java#L3-L120)
 
 ```java
 private int idCampeonato;
@@ -285,7 +285,7 @@ private String statusAtual;
 
 ### 3.9 `RelatorioClassificacao`
 
-[`RelatorioClassificacao.java`](../../Java_Champs/src/br/com/controle/RelatorioClassificacao.java#L10-L184)
+[`RelatorioClassificacao.java`](../Java_Champs/src/br/com/controle/RelatorioClassificacao.java#L10-L184)
 
 ```java
 private String nomeCampeonato;
@@ -325,7 +325,7 @@ public String getAproveitamentoFormatado() {
 
 ### 3.10 `RelatorioPartida`
 
-[`RelatorioPartida.java`](../../Java_Champs/src/br/com/controle/RelatorioPartida.java#L7-L80)
+[`RelatorioPartida.java`](../Java_Champs/src/br/com/controle/RelatorioPartida.java#L7-L80)
 
 ```java
 private int rodada;
@@ -351,7 +351,7 @@ private String status;
 
 ## 4. A classe `DAO` (conexão JDBC)
 
-[`DAO.java`](../../Java_Champs/src/br/com/entidade/DAO.java#L11-L39)
+[`DAO.java`](../Java_Champs/src/br/com/entidade/DAO.java#L11-L39)
 
 ```java
 public class DAO {
@@ -544,7 +544,7 @@ public class ManterX extends DAO {
 
 ### 5.2 `ManterCampeonato`
 
-[`ManterCampeonato.java`](../../Java_Champs/src/br/com/entidade/ManterCampeonato.java#L8-L116)
+[`ManterCampeonato.java`](../Java_Champs/src/br/com/entidade/ManterCampeonato.java#L8-L116)
 
 | Método | SQL | Retorno |
 |---|---|---|
@@ -607,7 +607,7 @@ pst.setInt(3, codigo == null ? -1 : codigo);
 
 ### 5.3 `ManterEquipe`
 
-[`ManterEquipe.java`](../../Java_Champs/src/br/com/entidade/ManterEquipe.java#L8-L109)
+[`ManterEquipe.java`](../Java_Champs/src/br/com/entidade/ManterEquipe.java#L8-L109)
 
 | Método | SQL |
 |---|---|
@@ -624,7 +624,7 @@ pst.setInt(3, codigo == null ? -1 : codigo);
 
 ### 5.4 `ManterEstadio`
 
-[`ManterEstadio.java`](../../Java_Champs/src/br/com/entidade/ManterEstadio.java#L8-L111)
+[`ManterEstadio.java`](../Java_Champs/src/br/com/entidade/ManterEstadio.java#L8-L111)
 
 | Método | SQL |
 |---|---|
@@ -640,7 +640,7 @@ pst.setInt(3, codigo == null ? -1 : codigo);
 
 ### 5.5 `ManterArbitro`
 
-[`ManterArbitro.java`](../../Java_Champs/src/br/com/entidade/ManterArbitro.java#L8-L113)
+[`ManterArbitro.java`](../Java_Champs/src/br/com/entidade/ManterArbitro.java#L8-L113)
 
 | Método | SQL |
 |---|---|
@@ -656,7 +656,7 @@ pst.setInt(3, codigo == null ? -1 : codigo);
 
 ### 5.6 `ManterJogador`
 
-[`ManterJogador.java`](../../Java_Champs/src/br/com/entidade/ManterJogador.java#L15-L149)
+[`ManterJogador.java`](../Java_Champs/src/br/com/entidade/ManterJogador.java#L15-L149)
 
 #### O `SELECT` base
 
@@ -747,7 +747,7 @@ j.setNomeEquipe(rs.getString("nome_equipe"));
 
 ### 5.7 `ManterPartida`
 
-[`ManterPartida.java`](../../Java_Champs/src/br/com/entidade/ManterPartida.java#L9-L190)
+[`ManterPartida.java`](../Java_Champs/src/br/com/entidade/ManterPartida.java#L9-L190)
 
 #### O `SELECT` base
 
@@ -875,7 +875,7 @@ p.setNomeArbitro(rs.getString("nome_arb"));
 
 ### 5.8 `ManterClassificacao`
 
-[`ManterClassificacao.java`](../../Java_Champs/src/br/com/entidade/ManterClassificacao.java#L8-L121)
+[`ManterClassificacao.java`](../Java_Champs/src/br/com/entidade/ManterClassificacao.java#L8-L121)
 
 | Método | SQL | Uso |
 |---|---|---|
@@ -940,7 +940,7 @@ String query = "SELECT ... FROM CLASSIFICACAO c "
 
 ### 5.9 `ManterRelatorio`
 
-[`ManterRelatorio.java`](../../Java_Champs/src/br/com/entidade/ManterRelatorio.java#L17-L131)
+[`ManterRelatorio.java`](../Java_Champs/src/br/com/entidade/ManterRelatorio.java#L17-L131)
 
 | Método | Procedure | Retorno |
 |---|---|---|
@@ -1013,7 +1013,7 @@ private void fecharRecursos(CallableStatement cs) {
 
 ## 6. A `TelaPrincipal` (View)
 
-[`TelaPrincipal.java`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L21-L2073)
+[`TelaPrincipal.java`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L21-L2073)
 
 ### 6.1 Visão geral
 
@@ -1199,7 +1199,7 @@ tabela.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 ### 6.5 Aba 1 — Campeonato
 
-[`criarPainelCampeonato`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L256-L449)
+[`criarPainelCampeonato`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L256-L449)
 
 **Layout:**
 
@@ -1255,7 +1255,7 @@ vincularValidacao(validar, txtIdCamp, txtNomeCamp, txtInicioCamp, txtFimCamp, tx
 
 ### 6.6 Aba 2 — Equipe
 
-[`criarPainelEquipe`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L454-L611)
+[`criarPainelEquipe`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L454-L611)
 
 - Formulário `GridLayout(2, 4, 8, 8)`: ID, Nome, Cidade, Pesquisar.
 - Botões: Cadastrar, Consultar, Alterar, Excluir, Limpar.
@@ -1268,7 +1268,7 @@ vincularValidacao(validar, txtIdCamp, txtNomeCamp, txtInicioCamp, txtFimCamp, tx
 
 ### 6.7 Aba 3 — Jogador (CRUD extra)
 
-[`criarPainelJogador`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L616-L818)
+[`criarPainelJogador`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L616-L818)
 
 **Layout:**
 
@@ -1320,7 +1320,7 @@ boolean temId = !vazio(txtIdJogador.getText());
 
 ### 6.8 Aba 4 — Estádio
 
-[`criarPainelEstadio`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L823-L993)
+[`criarPainelEstadio`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L823-L993)
 
 - Formulário `GridLayout(3, 4, 8, 8)`: ID, Nome, Cidade, Capacidade, Pesquisar.
 - Tabela: `ID`, `Nome`, `Cidade`, `Capacidade`.
@@ -1331,7 +1331,7 @@ boolean temId = !vazio(txtIdJogador.getText());
 
 ### 6.9 Aba 5 — Árbitro
 
-[`criarPainelArbitro`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L998-L1166)
+[`criarPainelArbitro`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L998-L1166)
 
 - Formulário `GridLayout(3, 4, 8, 8)`: ID, Nome, Registro Federação, Categoria, Pesquisar.
 - Categorias: `LOCAL`, `ESTADUAL`, `NACIONAL`, `FIFA`.
@@ -1342,7 +1342,7 @@ boolean temId = !vazio(txtIdJogador.getText());
 
 ### 6.10 Aba 6 — Inscrição & Classificação
 
-[`criarPainelClassificacao`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1171-L1319)
+[`criarPainelClassificacao`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1171-L1319)
 
 **Layout:**
 
@@ -1432,7 +1432,7 @@ if (c != null) {
 
 ### 6.11 Aba 7 — Partidas (CRUD principal)
 
-[`criarPainelPartidas`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1324-L1625)
+[`criarPainelPartidas`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1324-L1625)
 
 **Layout `GridLayout(6, 4, 6, 6)`:**
 
@@ -1593,7 +1593,7 @@ p.setTempoPartida(tempo.isEmpty() ? null : tempo);
 
 ### 6.12 Aba 8 — Relatórios
 
-[`criarPainelRelatorios`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1630-L1850)
+[`criarPainelRelatorios`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1630-L1850)
 
 **Layout:**
 
@@ -1775,7 +1775,7 @@ validar.run();
 
 ### 6.13 `recarregarTudo()` — a sincronização da tela
 
-[`recarregarTudo`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1855-L1952)
+[`recarregarTudo`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1855-L1952)
 
 ```java
 private void recarregarTudo() {
@@ -1900,7 +1900,7 @@ private void recarregarTudo() {
 
 ### 6.14 `carregarTabelaClassificacao` e os botões
 
-[`carregarTabelaClassificacao`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1954-L1977)
+[`carregarTabelaClassificacao`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1954-L1977)
 
 - Obtém o campeonato selecionado em `cbCampClass`.
 - Limpa a tabela.
@@ -1927,7 +1927,7 @@ btnDesinscrever.setEnabled(temCampeonato && temLinha);
 
 ### 6.15 Os seletores de combo
 
-[`selecionarComboCampeonato`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1981-L2015) e equivalentes para equipe, estádio e árbitro:
+[`selecionarComboCampeonato`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1981-L2015) e equivalentes para equipe, estádio e árbitro:
 
 ```java
 private void selecionarComboEquipe(JComboBox<Equipe> cb, int id) {
@@ -1946,7 +1946,7 @@ private void selecionarComboEquipe(JComboBox<Equipe> cb, int id) {
 
 ### 6.16 `mostrarErro` — a tradução das mensagens
 
-[`mostrarErro`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L2017-L2050)
+[`mostrarErro`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L2017-L2050)
 
 ```java
 private void mostrarErro(Exception ex) {
@@ -1996,7 +1996,7 @@ private void mostrarErro(Exception ex) {
 
 ### 6.17 `initComponents` e `main`
 
-[`initComponents`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L2052-L2058)
+[`initComponents`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L2052-L2058)
 
 ```java
 private void initComponents() {
@@ -2009,7 +2009,7 @@ private void initComponents() {
 - Código gerado pelo NetBeans, mas mínimo: fecha o programa ao fechar a janela, define `BorderLayout` e `pack`.
 - A interface real é montada em `configurarJanelaCompleta`.
 
-[`main`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L2060-L2072): já explicado na seção 1.3.
+[`main`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L2060-L2072): já explicado na seção 1.3.
 
 ### 6.18 Modelo de eventos e concorrência
 

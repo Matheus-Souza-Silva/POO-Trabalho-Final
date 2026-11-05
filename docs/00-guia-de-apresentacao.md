@@ -53,8 +53,11 @@ POO-Trabalho-Final/
 ├── README.md                         # apresentação do projeto, funcionalidades e como executar
 ├── Organizacao_Projeto_POO.docx      # documento de organização do trabalho (não é código)
 ├── docs/
-│   ├── guia/                         # ESTES guias de estudo
-│   └── superpowers/                  # planos e issues do desenvolvimento (histórico)
+│   ├── 00-guia-de-apresentacao.md    # ESTES guias de estudo (visão geral)
+│   ├── 01-banco-de-dados.md
+│   ├── 02-java-e-relatorios.md
+│   ├── 03-mapa-do-codigo.md
+│   └── 04-perguntas-e-respostas.md
 ├── SQL_Champs/
 │   ├── Champs_schema.sql             # banco, 7 tabelas, PKs, FKs, CHECKs, UNIQUEs, índices
 │   ├── Champs_procedures_triggers.sql# validação da partida, sincronização e triggers
@@ -171,7 +174,7 @@ Esta seção é o coração da apresentação: saber **quem chama quem**.
 6. A tela mostra “Equipe cadastrada!”, limpa os campos e chama `recarregarTudo()`.
 7. `recarregarTudo()` consulta todos os DAOs e repovoa a `JTable` e os `JComboBox`.
 
-**Código:** [`TelaPrincipal.criarPainelEquipe`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L454-L604) e [`ManterEquipe.inserir`](../../Java_Champs/src/br/com/entidade/ManterEquipe.java#L10-L21).
+**Código:** [`TelaPrincipal.criarPainelEquipe`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L454-L604) e [`ManterEquipe.inserir`](../Java_Champs/src/br/com/entidade/ManterEquipe.java#L10-L21).
 
 ### 4.2 Consultar pelo botão Pesquisar
 
@@ -200,7 +203,7 @@ Esta seção é o coração da apresentação: saber **quem chama quem**.
 7. A procedure zera os acumulados do campeonato, soma as partidas `ENCERRADA` e recalcula a colocação.
 8. O Java recebe sucesso e mostra “Partida registrada e classificação sincronizada!”; em erro, `mostrarErro` exibe a mensagem do banco.
 
-**Código:** [`TelaPrincipal.criarPainelPartidas`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1324-L1570), [`ManterPartida.inserir`](../../Java_Champs/src/br/com/entidade/ManterPartida.java#L25-L37), [`sp_validar_partida`](../../SQL_Champs/Champs_procedures_triggers.sql#L147-L205), [`sp_sincronizar_classificacao`](../../SQL_Champs/Champs_procedures_triggers.sql#L37-L122).
+**Código:** [`TelaPrincipal.criarPainelPartidas`](../Java_Champs/src/br/com/visao/TelaPrincipal.java#L1324-L1570), [`ManterPartida.inserir`](../Java_Champs/src/br/com/entidade/ManterPartida.java#L25-L37), [`sp_validar_partida`](../SQL_Champs/Champs_procedures_triggers.sql#L147-L205), [`sp_sincronizar_classificacao`](../SQL_Champs/Champs_procedures_triggers.sql#L37-L122).
 
 ### 4.4 Lançar o placar (alterar uma partida)
 

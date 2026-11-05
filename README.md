@@ -395,7 +395,7 @@ POO-Trabalho-Final/
 │   │   ├── entidade/                   # DAO: conexão e classes Manter...
 │   │   └── visao/                      # View: TelaPrincipal (Swing)
 │   └── nbproject/                      # configuração do projeto NetBeans
-└── 📂 docs/guia/                       # guias de estudo e apresentação
+└── 📂 docs/                            # guias de estudo e apresentação (arquivos .md)
 ```
 
 ---
@@ -416,11 +416,11 @@ POO-Trabalho-Final/
 
 | Documento | Conteúdo |
 |---|---|
-| [Guia de apresentação](docs/guia/00-guia-de-apresentacao.md) | visão geral, requisitos, MVC, fluxos de ponta a ponta, roteiro da demonstração e limitações |
-| [Guia do banco de dados](docs/guia/01-banco-de-dados.md) | cada tabela, constraint, trigger, procedure e JOIN, linha a linha |
-| [Guia do Java e dos relatórios](docs/guia/02-java-e-relatorios.md) | classes, métodos, JDBC, Swing, validações, DAOs e impressão |
-| [Mapa do código](docs/guia/03-mapa-do-codigo.md) | índice por arquivo, faixa de linhas, método e assunto |
-| [Simulado de perguntas](docs/guia/04-perguntas-e-respostas.md) | perguntas prováveis, pegadinhas e respostas curtas |
+| [Guia de apresentação](docs/00-guia-de-apresentacao.md) | visão geral, requisitos, MVC, fluxos de ponta a ponta, roteiro da demonstração e limitações |
+| [Guia do banco de dados](docs/01-banco-de-dados.md) | cada tabela, constraint, trigger, procedure e JOIN, linha a linha |
+| [Guia do Java e dos relatórios](docs/02-java-e-relatorios.md) | classes, métodos, JDBC, Swing, validações, DAOs e impressão |
+| [Mapa do código](docs/03-mapa-do-codigo.md) | índice por arquivo, faixa de linhas, método e assunto |
+| [Simulado de perguntas](docs/04-perguntas-e-respostas.md) | perguntas prováveis, pegadinhas e respostas curtas |
 
 ---
 

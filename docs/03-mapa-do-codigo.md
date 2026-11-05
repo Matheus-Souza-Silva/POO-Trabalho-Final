@@ -24,7 +24,7 @@ Dica para a apresentação: decore a **matriz da seção 4**. Ela responde 80% d
 
 ### 2.1 `Champs_schema.sql` (191 linhas)
 
-[`SQL_Champs/Champs_schema.sql`](../../SQL_Champs/Champs_schema.sql)
+[`SQL_Champs/Champs_schema.sql`](../SQL_Champs/Champs_schema.sql)
 
 | Linhas | Bloco | O que contém |
 |---:|---|---|
@@ -50,7 +50,7 @@ Dica para a apresentação: decore a **matriz da seção 4**. Ela responde 80% d
 
 ### 2.2 `Champs_procedures_triggers.sql` (289 linhas)
 
-[`SQL_Champs/Champs_procedures_triggers.sql`](../../SQL_Champs/Champs_procedures_triggers.sql)
+[`SQL_Champs/Champs_procedures_triggers.sql`](../SQL_Champs/Champs_procedures_triggers.sql)
 
 | Linhas | Bloco | O que contém |
 |---:|---|---|
@@ -78,7 +78,7 @@ Dica para a apresentação: decore a **matriz da seção 4**. Ela responde 80% d
 
 ### 2.3 `Champs_relatorios.sql` (118 linhas)
 
-[`SQL_Champs/Champs_relatorios.sql`](../../SQL_Champs/Champs_relatorios.sql)
+[`SQL_Champs/Champs_relatorios.sql`](../SQL_Champs/Champs_relatorios.sql)
 
 | Linhas | Bloco | O que contém |
 |---:|---|---|
@@ -89,7 +89,7 @@ Dica para a apresentação: decore a **matriz da seção 4**. Ela responde 80% d
 
 ### 2.4 `Champs_dados.sql` (183 linhas)
 
-[`SQL_Champs/Champs_dados.sql`](../../SQL_Champs/Champs_dados.sql)
+[`SQL_Champs/Champs_dados.sql`](../SQL_Champs/Champs_dados.sql)
 
 | Linhas | Bloco | Quantidade |
 |---:|---|---:|
@@ -108,7 +108,7 @@ Dica para a apresentação: decore a **matriz da seção 4**. Ela responde 80% d
 
 ### 2.5 `testar.sh` (53 linhas)
 
-[`SQL_Champs/testar.sh`](../../SQL_Champs/testar.sh)
+[`SQL_Champs/testar.sh`](../SQL_Champs/testar.sh)
 
 | Linhas | Bloco |
 |---:|---|
@@ -134,21 +134,21 @@ Dica para a apresentação: decore a **matriz da seção 4**. Ela responde 80% d
 
 | Arquivo | Linhas | Campos | Métodos principais | Observação |
 |---|---:|---|---|---|
-| [`Campeonato.java`](../../Java_Champs/src/br/com/controle/Campeonato.java) | 55 | 3–8 | getters/setters 10–48; `toString` 50–53 | datas `String` |
-| [`Equipe.java`](../../Java_Champs/src/br/com/controle/Equipe.java) | 36 | 3–6 | getters/setters 8–30; `toString` 32–35 | usada em combos |
-| [`Estadio.java`](../../Java_Champs/src/br/com/controle/Estadio.java) | 45 | 3–8 | getters/setters 10–39; `toString` 41–44 | capacidade `int` |
-| [`Arbitro.java`](../../Java_Champs/src/br/com/controle/Arbitro.java) | 45 | 3–7 | getters/setters 9–39; `toString` 41–44 | categoria `String` |
-| [`Jogador.java`](../../Java_Champs/src/br/com/controle/Jogador.java) | 86 | 12–22 | getters/setters 24–78; `toString` 80–85 | `nomeEquipe` extra |
-| [`Partida.java`](../../Java_Champs/src/br/com/controle/Partida.java) | 168 | 3–23 | getters/setters 25–167 | 5 nomes extras; gols `Integer` |
-| [`Classificacao.java`](../../Java_Champs/src/br/com/controle/Classificacao.java) | 121 | 3–16 | getters/setters 18–120 | `colocacaoEquipe` `Integer` |
-| [`RelatorioClassificacao.java`](../../Java_Champs/src/br/com/controle/RelatorioClassificacao.java) | 185 | 10–32 | getters/setters 34–176; formatadores 178–184 | linha do relatório |
-| [`RelatorioPartida.java`](../../Java_Champs/src/br/com/controle/RelatorioPartida.java) | 81 | 7–16 | getters/setters 18–80 | linha do relatório |
+| [`Campeonato.java`](../Java_Champs/src/br/com/controle/Campeonato.java) | 55 | 3–8 | getters/setters 10–48; `toString` 50–53 | datas `String` |
+| [`Equipe.java`](../Java_Champs/src/br/com/controle/Equipe.java) | 36 | 3–6 | getters/setters 8–30; `toString` 32–35 | usada em combos |
+| [`Estadio.java`](../Java_Champs/src/br/com/controle/Estadio.java) | 45 | 3–8 | getters/setters 10–39; `toString` 41–44 | capacidade `int` |
+| [`Arbitro.java`](../Java_Champs/src/br/com/controle/Arbitro.java) | 45 | 3–7 | getters/setters 9–39; `toString` 41–44 | categoria `String` |
+| [`Jogador.java`](../Java_Champs/src/br/com/controle/Jogador.java) | 86 | 12–22 | getters/setters 24–78; `toString` 80–85 | `nomeEquipe` extra |
+| [`Partida.java`](../Java_Champs/src/br/com/controle/Partida.java) | 168 | 3–23 | getters/setters 25–167 | 5 nomes extras; gols `Integer` |
+| [`Classificacao.java`](../Java_Champs/src/br/com/controle/Classificacao.java) | 121 | 3–16 | getters/setters 18–120 | `colocacaoEquipe` `Integer` |
+| [`RelatorioClassificacao.java`](../Java_Champs/src/br/com/controle/RelatorioClassificacao.java) | 185 | 10–32 | getters/setters 34–176; formatadores 178–184 | linha do relatório |
+| [`RelatorioPartida.java`](../Java_Champs/src/br/com/controle/RelatorioPartida.java) | 81 | 7–16 | getters/setters 18–80 | linha do relatório |
 
 ### 3.2 Pacote `br.com.entidade` (DAO)
 
 #### `DAO.java` (39 linhas)
 
-[`DAO.java`](../../Java_Champs/src/br/com/entidade/DAO.java)
+[`DAO.java`](../Java_Champs/src/br/com/entidade/DAO.java)
 
 | Linhas | Elemento | O que faz |
 |---:|---|---|
@@ -247,7 +247,7 @@ Dica para a apresentação: decore a **matriz da seção 4**. Ela responde 80% d
 
 ### 3.3 Pacote `br.com.visao` — `TelaPrincipal.java` (2.073 linhas)
 
-[`TelaPrincipal.java`](../../Java_Champs/src/br/com/visao/TelaPrincipal.java)
+[`TelaPrincipal.java`](../Java_Champs/src/br/com/visao/TelaPrincipal.java)
 
 #### Mapa geral
 
