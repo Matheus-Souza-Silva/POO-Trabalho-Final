@@ -129,6 +129,17 @@ Veja o README. Em resumo: `bash SQL_Champs/testar.sh` (com Docker) ou rodar `99_
 - **B) Classificação:** confere se os triggers calcularam certo (Tigres FC 1º com 6 pontos, por exemplo). Cada linha mostra `OK` ou `FALHOU`.
 - **D) Erros esperados:** comandos que **devem** ser recusados, como apagar um campeonato que tem partidas.
 
+### 1.10 Dados de demonstração
+
+Além do roteiro de testes, existe o `SQL_Champs/Champs_dados.sql`, voltado para deixar o banco populado na apresentação. Ele cria:
+
+- 4 campeonatos (um em cada status);
+- 10 equipes, 5 estádios e 5 árbitros com nomes/registros únicos;
+- 21 jogadores (camisas únicas por equipe e algumas datas `NULL`);
+- 28 partidas com placar, jogos agendados, cancelados e um em andamento.
+
+Execute-o num banco recém-criado, **no lugar** do `99_testes.sql`. O `99_testes` espera IDs fixos e um banco vazio; misturar os dois faz os testes falharem.
+
 ### Perguntas prováveis (seção 1)
 
 **Qual é a diferença entre chave primária e chave estrangeira?**
@@ -371,6 +382,10 @@ Dica: explique `DELIMITER $$`. Como os blocos têm vários `;` dentro, trocamos 
 
 1. **`sp_relatorio_classificacao`**: JOIN de `CLASSIFICACAO` com `CAMPEONATO` e `EQUIPE` e subconsultas em `PARTIDA`/`ESTADIO`/`ARBITRO`; colunas de posição, pontos, saldo e aproveitamento.
 2. **`sp_relatorio_partidas_periodo`**: parâmetros, os 4 `INNER JOIN`, o filtro de período e a formatação (data e placar).
+
+### `Champs_dados.sql`: banco pronto para a apresentação
+
+Contém os INSERTs de demonstração: 4 campeonatos, 10 equipes, 5 estádios, 5 árbitros, 21 jogadores e 28 partidas. É o arquivo para encher as telas e mostrar os relatórios; não substitui o `99_testes.sql`.
 
 ### `99_testes.sql`: a prova de que funciona
 

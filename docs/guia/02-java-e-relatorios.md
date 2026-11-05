@@ -380,6 +380,8 @@ Sem Docker, rode o `SQL_Champs/99_testes.sql` no Workbench. O resultado esperado
 - exatamente os comandos marcados `ESPERADO ERRO` falhando;
 - nenhum `FALHOU`.
 
+Para deixar o banco cheio para a apresentação, use `SQL_Champs/Champs_dados.sql` **no lugar** do `99_testes.sql`, num banco recém-criado. Ele tem 4 campeonatos, 10 equipes, 21 jogadores e 28 partidas com situações variadas.
+
 ### Aplicação
 
 1. Abra `Java_Champs` no NetBeans.

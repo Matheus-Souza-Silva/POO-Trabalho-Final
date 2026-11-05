@@ -32,8 +32,8 @@ Material para **todos os integrantes**. Na apresentação cada um abre o código
 | Consulta com JOIN | `sp_relatorio_classificacao` e `sp_relatorio_partidas_periodo` em `SQL_Champs/Champs_relatorios.sql`; consultas Java em `ManterPartida`, `ManterClassificacao` e `ManterJogador` | ✅ |
 | Relatório da rotina principal | Aba **8. Relatórios** → classificação (relatório principal) e partidas por período | ✅ |
 | MySQL, tabelas, PK, FK, relacionamentos | `SQL_Champs/Champs_schema.sql` (guia do banco, seção 1) | ✅ |
-| Script SQL de criação | `Champs_schema.sql`, `Champs_procedures_triggers.sql`, `Champs_relatorios.sql` | ✅ |
-| Dados cadastrados para demonstração | cadastrados pelas telas; testes do banco em `SQL_Champs/99_testes.sql` | ✅ |
+| Script SQL de criação | `Champs_schema.sql`, `Champs_procedures_triggers.sql`, `Champs_relatorios.sql` e `Champs_dados.sql` (dados opcionais) | ✅ |
+| Dados cadastrados para demonstração | `SQL_Champs/Champs_dados.sql` (4 campeonatos, 10 equipes, 21 jogadores e 28 partidas) ou cadastro pelas telas | ✅ |
 | Java + POO | classes de modelo, DAO e tela em `Java_Champs/src/br/com/` | ✅ |
 | JFrame/Swing | `TelaPrincipal` no pacote `visao` | ✅ |
 | JDBC | `DAO` e classes `Manter...` no pacote `entidade` | ✅ |

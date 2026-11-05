@@ -271,8 +271,21 @@ flowchart TD
 | [`Champs_schema.sql`](SQL_Champs/Champs_schema.sql) | cria o banco `campeonato`: tabelas, PK, FK, `CHECK`, `UNIQUE` |
 | [`Champs_procedures_triggers.sql`](SQL_Champs/Champs_procedures_triggers.sql) | validação das partidas, inscrição e classificação automática |
 | [`Champs_relatorios.sql`](SQL_Champs/Champs_relatorios.sql) | procedures dos relatórios: classificação e partidas por período |
+| [`Champs_dados.sql`](SQL_Champs/Champs_dados.sql) | **dados de demonstração**: 4 campeonatos, 10 equipes, 5 estádios, 5 árbitros, 21 jogadores e 28 partidas com situações variadas |
 | [`99_testes.sql`](SQL_Champs/99_testes.sql) | roteiro de testes (dados de teste + verificações `OK`/`FALHOU`) |
 | [`testar.sh`](SQL_Champs/testar.sh) | executa tudo num MySQL descartável via Docker |
+
+### Dados de demonstração
+
+O arquivo [`Champs_dados.sql`](SQL_Champs/Champs_dados.sql) serve para deixar o sistema populado para a apresentação, com casos diferentes:
+
+- **4 campeonatos** nos status `PLANEJADO`, `EM_ANDAMENTO`, `ENCERRADO` e `CANCELADO`;
+- **10 equipes**, **5 estádios** e **5 árbitros**, todos com nomes/registros únicos;
+- **21 jogadores**, com camisas únicas por equipe e algumas datas de nascimento `NULL`;
+- **28 partidas**, incluindo jogos encerrados, agendados, cancelados e um `EM_ANDAMENTO` com tempo de jogo;
+- inscrições em três campeonatos diferentes.
+
+> ⚠️ Use `Champs_dados.sql` **ou** `99_testes.sql`, não os dois no mesmo banco. O `99_testes` conta com IDs fixos e um banco recém-criado; o arquivo de demonstração é para encher as telas.
 
 ### Relatório principal
 
@@ -330,7 +343,17 @@ SQL_Champs/Champs_relatorios.sql
 
 > ⚠️ O `Champs_schema.sql` **apaga e recria** o banco `campeonato`. Os dados do sistema são cadastrados pelas telas.
 
-### 2. Testar o banco *(opcional)*
+### 2. Popular para demonstração *(opcional)*
+
+Para deixar as tabelas cheias antes da apresentação, execute:
+
+```
+SQL_Champs/Champs_dados.sql
+```
+
+Isso cria 4 campeonatos, 10 equipes, 5 estádios, 5 árbitros, 21 jogadores e 28 partidas. **Não execute o `99_testes.sql` depois desse arquivo** sem recriar o banco, porque os IDs de teste deixam de bater.
+
+### 3. Testar o banco *(opcional)*
 
 Com Docker:
 
@@ -340,7 +363,7 @@ bash SQL_Champs/testar.sh
 
 Sem Docker, execute os três scripts e depois o `99_testes.sql` no Workbench, num banco recém-criado. Todos os testes devem mostrar `OK`, e só os comandos marcados com `ESPERADO ERRO` podem falhar.
 
-### 3. Executar a aplicação
+### 4. Executar a aplicação
 
 1. Abra a pasta [`Java_Champs`](Java_Champs) no NetBeans.
 2. Adicione o `mysql-connector-j-9.3.0.jar` em **Libraries** (o projeto referencia o jar que já está em `POO/mysql-connector-j-9.3.0.jar` no ambiente original; em outra máquina, aponte para o seu).
@@ -364,6 +387,7 @@ POO-Trabalho-Final/
 │   ├── Champs_schema.sql               # estrutura: tabelas, chaves, regras
 │   ├── Champs_procedures_triggers.sql  # validações e classificação automática
 │   ├── Champs_relatorios.sql           # procedures dos relatórios
+│   ├── Champs_dados.sql                # dados variados para demonstração
 │   ├── 99_testes.sql                   # roteiro de testes
 │   └── testar.sh                       # testes automáticos (Docker)
 ├── 📂 Java_Champs/                     # aplicação Java (NetBeans)
