@@ -90,7 +90,7 @@ O sistema segue o padrão **Model-View-Controller**: cada camada tem uma respons
 ```mermaid
 flowchart TD
     U(["Usuário"])
-    V["VIEW<br/>TelaPrincipal (Swing)")]
+    V["VIEW<br/>TelaPrincipal (Swing)"]
     C["CONTROLE<br/>classes de dados e relatórios"]
     M["ENTIDADE / DAO<br/>Manter... + SQL JDBC"]
     DB[("MySQL<br/>tabelas, triggers e procedures")]
