@@ -33,8 +33,6 @@ Organizar um campeonato exige saber **quem joga contra quem, onde, quando, com q
 - **Entidade central:** a **classificação**, que liga cada campeonato às equipes inscritas e é recalculada automaticamente pelos triggers do banco a cada partida incluída, alterada ou excluída.
 - **Relatórios:** classificação do campeonato (relatório principal, com JOIN entre as tabelas da rotina) e partidas por período (com impressão/PDF pelo próprio Swing).
 
-> 📋 Acompanhamento do trabalho no [Notion](https://solux.notion.site/POO-Trabalho-em-Grupo-3f83d05adda5803f9eb5f7d682b56de3).
-
 ---
 
 ## ✨ Funcionalidades
